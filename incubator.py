@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 @app.route('/pullNewVersion', methods=['POST'])
 def pullNewVersion():
-    request_data = request.get_json()
-    print(json.dumps(request_data, indent=4, sort_keys=True))
+    request_data = request.get_data()
+    print(request_data)
 
 @app.route('/')
 def index():
