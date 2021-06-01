@@ -6,7 +6,7 @@ import subprocess
 app = Flask(__name__)
 
 
-path = "~/Incubator-server/"
+path = "/root/Incubator-server/"
 file_path = path + "incubator.py"
 process = object()
 
