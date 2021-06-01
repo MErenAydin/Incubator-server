@@ -4,12 +4,6 @@ import os
 
 app = Flask(__name__)
 
-@app.route('/pullNewVersion', methods=['POST'])
-def pullNewVersion():
-    request_data = request.get_json()
-    print(json.dumps(request_data, indent=4, sort_keys=True))
-    os.popen("git pull && python3 incubator.py && kill {}".format(os.get_pid()))
-
 @app.route('/')
 def index():
     return render_template("index.html")
