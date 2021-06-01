@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 @app.route('/pullNewVersion', methods=['POST'])
 def pullNewVersion():
-    request_data = request.get_data()
-    print(request_data)
+    request_data = request.get_json()
+    print(json.dumps(request_data, indent=4, sort_keys=True))
 
 @app.route('/')
 def index():
@@ -22,3 +22,4 @@ def humidity():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
+
