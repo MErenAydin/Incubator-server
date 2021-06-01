@@ -16,11 +16,11 @@ def pullNewVersion():
     request_data = request.get_json()
     print(json.dumps(request_data, indent=4, sort_keys=True))
     process.terminate()
-    subprocess.Popen(["git pull"], shell=False).wait()
+    subprocess.Popen(["git", "pull"], shell=False).wait()
     process = subprocess.Popen(["python3", file_path], shell=False)
 
 if __name__ == '__main__':
     os.chdir(path)
-    subprocess.Popen(["git pull"], shell=False).wait()
+    subprocess.Popen(["git", "pull"], shell=False).wait()
     process = subprocess.Popen(["python3", file_path], shell=False)
     app.run(host='0.0.0.0', port=8080)
