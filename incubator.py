@@ -1,6 +1,12 @@
 from flask import Flask,render_template
+import json
 
 app = Flask(__name__)
+
+@app.route('/pullNewVersion', methods=['POST'])
+def pullNewVersion():
+    request_data = request.get_json()
+    print(json.dumps(request_data, indent=4, sort_keys=True))
 
 @app.route('/')
 def index():
