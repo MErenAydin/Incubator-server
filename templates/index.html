@@ -1,0 +1,332 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+  <!-- HEADER -->
+  <div class="header">
+    <h2>ESP-INCUBATOR</h2>
+  </div>
+  <br>
+  <!-- SICAKLIK NEM OLCUMLERI -->
+  <div class="container">
+    <table>
+      <tr>
+        <td>
+          <span class="dht-labels"><i class="fas fa-thermometer-half"></i> SICAKLIK</span>
+        </td>
+        <td><span id="temperature" class="measurement">%TEMPERATURE%</span></td>
+        <td id = "tempStatus" style= "font-size: 1.5em;"><i class="fas fa-minus-square"></i></td>
+      </tr>
+      <tr>
+        <td>
+          <span class="dht-labels"><i class="fas fa-tint"></i> NEM</span>
+        </td>
+        <td><span id="humidity" class="measurement">%HUMIDITY%</span></td>
+        <td id = "humStatus" style= "font-size: 1.5em;"><i class="fas fa-minus-square"></i></td>
+      </tr>
+    </table>
+  </div>
+  <br>
+  <!-- TABLAR -->
+  <div class="tabHeader">
+    <i id="settingsTab" class="tab fas fa-cog" onclick="tabToggle(event)"></i>
+    <i id="datesTab" class="tab fas fa-calendar-alt" onclick="tabToggle(event)"></i>
+    <i id="eggTypesTab" class="tab fas fa-egg" onclick="tabToggle(event)"></i>
+    <i id="calibrationTab" class="tab fas fa-tools" onclick="tabToggle(event)"></i>
+  </div>
+  <!-- AYARLAR -->
+  <div id="settings" class="tabBody settings">
+    <h3>AYARLAR</h3>
+    <br>
+    <form action="/post" method="post">
+      <table>
+        <tr>
+          <td><label for="tempMin">Asgari Sicaklik:</label></td>
+          <td>
+            <input class="input" id="tempMin" name="tempMin" type="number" step="0.1" value="%TEMPMIN%" min="25"
+              max="50">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="tempMax">Azami Sicaklik:</label></td>
+          <td>
+            <input class="input" id="tempMax" name="tempMax" type="number" step="0.1" value="%TEMPMAX%" min="25"
+              max="50">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="humMin">Asgari Nem:</label></td>
+          <td>
+            <input class="input" id="humMin" name="humMin" type="number" step="0.1" value="%HUMMIN%" min="40" max="80">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="humMax">Azami Nem:</label></td>
+          <td>
+            <input class="input" id="humMax" name="humMax" type="number" step="0.1" value="%HUMMAX%" min="40" max="80">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="tempOffset">Sicaklik Ofseti:</label></td>
+          <td>
+            <input class="input" id="tempOffset" name="tempOffset" type="number" step="0.1" value="%TEMPOFFSET%"
+              min="-20" max="20">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="humOffset">Nem Ofseti:</label></td>
+          <td>
+            <input class="input" id="humOffset" name="humOffset" type="number" step="0.1" value="%HUMOFFSET%" min="-20"
+              max="20">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="motorInterval">Motor Donme Araligi (dk):</label></td>
+          <td>
+            <input class="input" id="motorInterval" name="motorInterval" type="number" step="1" value="%MOTORINTERVAL%"
+              min="10" max="200000">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="motorTurnTime">Motor Donus Suresi (ms):</label></td>
+          <td>
+            <input class="input" id="motorTurnTime" name="motorTurnTime" type="number" step="10" value="%MOTORTURNTIME%"
+              min="100" max="500000">
+          </td>
+        </tr>
+      </table>
+      <br>
+      <button class="button" type="submit" onclick="return confirm('Ayarlar degisecek. Emin misiniz?');"><i
+          class="fas fa-save"></i> KAYDET</button>
+    </form>
+  </div>
+  <!-- TARIHLER -->
+  <div id="dates" class="tabBody dates" style="display: none;">
+    <h3>TARIHLER</h3>
+    <br>
+    <form action="/startIncubation" method="post">
+      <table>
+        <tr>
+          <td><label for="tempMin">Baslangic Tarihi:</label></td>
+          <td><input class="input" id="incStartTime" name="incStartTime" type="date" value="%INCSTARTTIME%"></td>
+        </tr>
+        <tr>
+          <td><label for="tempMin">Cikim modu Tarihi:</label></td>
+          <td><input class="input" id="incHatchingModeTime" name="incHatchingModeTime" type="date"
+              value="%INCHATCHINGMODETIME%" disabled></td>
+        </tr>
+        <tr>
+          <td><label for="tempMin">Yaklasik Cikim Tarihi:</label></td>
+          <td><input class="input" id="incEndTime" name="incEndTime" type="date" value="%INCENDTIME%" disabled></td>
+        </tr>
+      </table>
+      <br>
+        <button class="button" type="submit" onclick="return confirm('Tarihler Tekrar Hesaplanacak. Emin misiniz?');"><i
+          class="fas fa-save"></i> KAYDET</button>
+    </form>
+  </div>
+  <!-- YUMURTA TIPI SECIMI-->
+  <div id="eggTypes" class="tabBody settings" style="display: none;">
+    <h3>YUMURTA TIPI SECIMI</h3>
+    <br>
+    <form action="/changeEggType" method="post">
+      <table>
+        <tr>
+          <td><label for="chicken">Tavuk:</label></td>
+          <td>
+            <input id="chicken" name="eggTypesRadio" type="radio" value="chicken">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="duck">Ordek:</label></td>
+          <td>
+            <input id="duck" name="eggTypesRadio" type="radio" value="duck">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="turkey">Hindi:</label></td>
+          <td>
+            <input id="turkey" name="eggTypesRadio" type="radio" value="turkey">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="quail">Bildircin:</label></td>
+          <td>
+            <input id="quail" name="eggTypesRadio" type="radio" value="quail">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="pheasant">Sulun:</label></td>
+          <td>
+            <input id="pheasant" name="eggTypesRadio" type="radio" value="pheasant">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="peacock">Tavuskusu:</label></td>
+          <td>
+            <input id="peacock" name="eggTypesRadio" type="radio" value="peacock">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="goose">Kaz:</label></td>
+          <td>
+            <input id="goose" name="eggTypesRadio" type="radio" value="goose">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="pigeon">Guvercin:</label></td>
+          <td>
+            <input id="pigeon" name="eggTypesRadio" type="radio" value="pigeon">
+          </td>
+        </tr>
+      </table>
+      <br>
+      <button class="button" type="submit" onclick="return confirm('Ayarlar degisecek. Emin misiniz?');"><i
+          class="fas fa-save"></i> KAYDET</button>
+    </form>
+  </div>
+  <!-- KALIBRASYON -->
+  <div id="calibration" class="tabBody settings" style="display: none;">
+    <h3>KALIBRASYON</h3>
+    <br>
+    <form action="/calibrate" method="post">
+      <table>
+        <tr>
+          <td><label for="tMin">Dusuk Kalibrasyon Derecesi:</label></td>
+          <td>
+            <input class="input" id="tMin" name="tMin" type="number" step="0.1" value="%TMIN%" min="-40" max="50">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="tMax">Yuksek Kalibrasyon Derecesi:</label></td>
+          <td>
+            <input class="input" id="tMax" name="tMax" type="number" step="0.1" value="%TMAX%" min="-40" max="50">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="tMinMeasured">Dusuk Olculen Derece:</label></td>
+          <td>
+            <input class="input" id="tMinMeasured" name="tMinMeasured" type="number" step="0.1" value="%TMINMEASURED%"
+              min="-40" max="50">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="tMaxMeasured">Yuksek Olculen Derece:</label></td>
+          <td>
+            <input class="input" id="tMaxMeasured" name="tMaxMeasured" type="number" step="0.1" value="%TMAXMEASURED%"
+              min="-40" max="50">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="hMin">Dusuk Kalibrasyon Nem:</label></td>
+          <td>
+            <input class="input" id="hMin" name="hMin" type="number" step="0.1" value="%HMIN%" min="0" max="90">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="hMax">Yuksek Kalibrasyon Nem:</label></td>
+          <td>
+            <input class="input" id="hMax" name="hMax" type="number" step="0.1" value="%HMAX%" min="0" max="90">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="hMinMeasured">Dusuk Olculen Nem:</label></td>
+          <td>
+            <input class="input" id="hMinMeasured" name="hMinMeasured" type="number" step="0.1" value="%HMINMEASURED%"
+              min="0" max="90">
+          </td>
+        </tr>
+        <tr>
+          <td><label for="hMaxMeasured">Yuksek Olculen Nem:</label></td>
+          <td>
+            <input class="input" id="hMaxMeasured" name="hMaxMeasured" type="number" step="0.1" value="%HMAXMEASURED%"
+              min="0" max="90">
+          </td>
+        </tr>
+      </table>
+      <br>
+      <button class="button" type="submit" onclick="return confirm('Ayarlar degisecek. Emin misiniz?');"><i
+          class="fas fa-save"></i> KAYDET</button>
+      <hr>
+    </form>
+    
+    <form action="/turnMotor" method="post" id="turnMotor">
+      <label for="motorForceTurnTime">Motoru sureli dondur(ms): </label>
+      <input class="input" id="motorForceTurnTime" name="motorTurnTime" type="number" step="10" value="%MOTORTURNTIME%"
+        min="100" max="500000">
+      <button style="font-size: 0.85em;" class="button" type="submit" form="turnMotor"><i class="fas fa-redo"></i>
+        DONDUR</button>
+    </form>
+  </div>
+</body>
+
+<script>
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      var icon = document.getElementById("tempStatus");
+      var tempMin = +document.getElementById("tempMin").value;
+      var tempMax = +document.getElementById("tempMax").value;
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("temperature").innerHTML = this.responseText;
+        var temp = parseFloat(this.responseText);
+        if(temp > tempMax)
+          icon.innerHTML = '<i class="fas fa-caret-square-down"></i>';
+        else if (temp < tempMin)
+          icon.innerHTML = '<i class="fas fa-caret-square-up"></i>';
+        else
+          icon.innerHTML = '<i class="fas fa-minus-square"></i>';
+      }
+    };
+    xhttp.open("GET", "/temperature", true);
+    xhttp.send();
+  }, 1000);
+
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      var icon = document.getElementById("humStatus");
+      var humMin = +document.getElementById("humMin").value;
+      var humMax = +document.getElementById("humMax").value;
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("humidity").innerHTML = this.responseText;
+        var hum = parseFloat(this.responseText);
+        if(hum > humMax)
+          icon.innerHTML = '<i class="fas fa-caret-square-down"></i>';
+        else if (hum < humMin)
+          icon.innerHTML = '<i class="fas fa-caret-square-up"></i>';
+        else
+          icon.innerHTML = '<i class="fas fa-minus-square"></i>';
+      }
+    };
+    xhttp.open("GET", "/humidity", true);
+    xhttp.send();
+  }, 1000);
+
+  var tabToggle = function (event) {
+    document.getElementById("dates").style.display = "none";
+    document.getElementById("eggTypes").style.display = "none";
+    document.getElementById("settings").style.display = "none";
+    document.getElementById("calibration").style.display = "none";
+    if (event.target.id === "settingsTab")
+      document.getElementById("settings").style.display = "flex";
+    if (event.target.id === "datesTab")
+      document.getElementById("dates").style.display = "flex";
+    if (event.target.id === "eggTypesTab")
+      document.getElementById("eggTypes").style.display = "flex";
+    if (event.target.id === "calibrationTab")
+      document.getElementById("calibration").style.display = "flex";
+  }
+
+</script>
+
+</html>

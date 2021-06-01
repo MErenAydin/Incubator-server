@@ -1,0 +1,132 @@
+html {
+    font-family: 'Roboto', sans-serif;
+    display: inline-block;
+    margin: 0px auto;
+    text-align: center;
+    padding: 0px;
+}
+h3,h2{
+    margin: 0px;
+}
+
+td:first-child{
+    text-align: right !important;
+}
+
+td:nth-child(2){
+    text-align: left !important;
+}
+
+.container{
+    border:solid 1px black;
+    border-radius: 4px;
+    padding: 10px 0px;
+    background-color: #4DA8DA;
+    color:#203647;
+    display: flex;
+    justify-content: center;
+}
+.measurement{
+    font-size: 1.5em;
+    font-weight: bolder;
+}
+
+.units {
+    font-size: 1.2rem;
+    color:#203647;
+}
+
+.dht-labels {
+    font-size: 1.5rem;
+    vertical-align: middle;
+    padding-bottom: 15px;
+    font-weight: bold;
+    color:#203647;
+}
+
+.button{
+    font-size: 1.2em;
+    border-radius: 4px;
+    background-color: #007CC7;
+    padding: 4px;
+    border: solid 1px black;
+    margin: 0px;
+    color:#203647;
+    font-weight:500;
+}
+.button:hover{
+    background-color: #3e8ab3;
+}
+.button:active{
+    background-color: #2f607a;
+}
+.settings{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.dates{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.header{
+    width: 100%;
+    padding: 30px 0px;
+    text-align: center;
+    background-color: #007CC7;
+    border: solid 1px black;
+    border-radius: 4px;
+    color:#203647;
+    font-size: 1.5em;
+    margin-bottom: 4px;
+}
+
+.input{
+    width: 150px;
+    border: solid 1px black;
+    border-radius: 4px;
+    padding: 4px;
+    margin-left: 4px;
+}
+
+.tabHeader{
+    display: flex;
+    justify-content: left;
+    border: solid 1px black;
+    border-bottom: solid 0px black;
+    border-radius: 4px 4px 0px 0px;
+    margin-bottom: 0px;
+    padding: 0px;
+    background-color:#007CC7;
+}
+
+.tabBody{
+    border:solid 1px black;
+    border-radius: 0px 0px 4px 4px;
+    padding: 10px 0px;
+    background-color: #4DA8DA;
+    margin-top: 0px;
+    color:#203647;
+}
+
+.tab{
+    width: 1.2em;
+    font-size: 2em;
+    padding:4px;
+    border-right: solid 1px black;
+    border-radius: 4px 4px 0px 0px;
+    background-color: #007CC7;
+}
+
+.tab:hover{
+    background-color: #3e8ab3;
+}
+
+.tab:active{
+    background-color: #2f607a;
+}
