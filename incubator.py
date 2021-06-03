@@ -46,7 +46,7 @@ def signin():
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
             user = cursor.fetchone()
-            if len(user) <= 0:
+            if user and len(user) <= 0:
                 salt = bytearray(secrets.token_bytes(64))
                 sql = """INSERT INTO users (username, registertime, email, name, surname, pwditeration, pwdhash, pwdsalt)
                 VALUES ('{}', current_timestamp, '{}', '{}', '{}', {}, E'\\\\x{}'::bytea, E'\\\\x{}'::bytea)
