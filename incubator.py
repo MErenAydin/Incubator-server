@@ -5,12 +5,12 @@ import os
 import psycopg2
 import redis
 
-#TODO: read from config file
-conn = psycopg2.connect(
-   database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432'
-)
+# #TODO: read from config file
+# conn = psycopg2.connect(
+#    database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432'
+# )
 
-cursor = conn.cursor()
+# cursor = conn.cursor()
 
 
 app = Flask(__name__)
@@ -27,7 +27,7 @@ server_session = Session(app)
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template("login.html")
 
 @app.route('/temperature')
 def temperature():
@@ -37,9 +37,10 @@ def temperature():
 def humidity():
     return "58.65"
 
-@app.route('/set_email', methods=['GET', 'POST'])
-def set_email():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
+        print(request.data)
         # Save the form data to the session object
         session['email'] = request.form['email_address']
         return redirect(url_for('get_email'))
