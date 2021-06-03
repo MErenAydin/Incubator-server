@@ -91,6 +91,11 @@ def humidity():
 def login():
     if request.method == 'POST':
         try:
+            if session['userId'] > 0:
+                return redirect(url_for('main_view', userId = session['userId']))
+        except Exception as e:
+            print(e)
+        try:
             # Do username pdw control
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
@@ -111,23 +116,6 @@ def login():
 
     return render_template("login.html")
 
-
-@app.route('/get_email')
-def get_email():
-    return render_template_string("""
-            {% if session['email'] %}
-                <h1>Welcome {{ session['email'] }}!</h1>
-            {% else %}
-                <h1>Welcome! Please enter your email <a href="{{ url_for('set_email') }}">here.</a></h1>
-            {% endif %}
-        """)
-
-
-@app.route('/delete_email')
-def delete_email():
-    # Clear the email stored in the session object
-    session.pop('email', default=None)
-    return '<h1>Session deleted!</h1>'
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
