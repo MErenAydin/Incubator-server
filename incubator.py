@@ -68,9 +68,13 @@ def signin():
 
     return render_template("signin.html")
 
-@app.route('/index')
-def main_view():
-    return render_template("index.html")
+@app.route('/index/<userId>')
+def main_view(userId = 0):
+    print(session['userId'])
+    if session['userId'] is not None and session['userId'] == userId:
+        return render_template("index.html")
+    else :
+        return redirect(url_for('login'))
 
 @app.route('/temperature')
 def temperature():
