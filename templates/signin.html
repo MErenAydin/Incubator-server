@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+
+    <!-- SIGN IN -->
+    <div class="center full-screen">
+        <div id="settings" class="container settings half-height half-width">
+            <h3>YENİ ÜYELİK</h3>
+            <br>
+            <form action="/signin" method="post">
+                <table>
+                    <tr>
+                        <td>
+                            <input class="input" id="userName" name="userName" type="text" placeholder="Kullanıcı Adı" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input class="input" id="password" name="password" type="password" placeholder="Şifre" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input class="input" id="email" name="email" type="email" placeholder="E-posta" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input class="input" id="name" name="name" type="text" placeholder="Ad" maxlength="50">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input class="input" id="surname" name="surname" type="text" placeholder="Soyad" maxlength="50">
+                        </td>
+                    </tr>
+
+                </table>
+                <br>
+                <button class="button" type="submit">
+                    <i class="fas fa-sign-in-alt"></i> KAYIT OL</button>
+            </form>
+            <br>
+        </div>
+    </div>
+
+</body>
+
+</html>
