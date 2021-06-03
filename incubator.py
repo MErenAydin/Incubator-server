@@ -91,11 +91,6 @@ def humidity():
 def login():
     if request.method == 'POST':
         try:
-            if session['userId'] > 0:
-                return redirect(url_for('main_view', userId = session['userId']))
-        except Exception as e:
-            print(e)
-        try:
             # Do username pdw control
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
@@ -113,6 +108,12 @@ def login():
                     return redirect(url_for('login'))
         except Exception as e:
             print(e)
+
+    try:
+        if session['userId'] > 0:
+            return redirect(url_for('main_view', userId = session['userId']))
+    except Exception as e:
+        print(e)
 
     return render_template("login.html")
 
