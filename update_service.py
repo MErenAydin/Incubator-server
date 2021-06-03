@@ -13,14 +13,16 @@ process = object()
 @app.route('/pullNewVersion', methods=['POST'])
 def pullNewVersion():
     global process
+    
     try:
-        request_data = request.get_json()
-        print(json.dumps(request_data, indent=4, sort_keys=True))
+        #request_data = request.get_json()
+        #print(json.dumps(request_data, indent=4, sort_keys=True))
         process.terminate()
-        subprocess.Popen(["git", "pull"], shell=False).wait()
+        subprocess.Popen(["git", "pull"], cwd = path, shell=False).wait()
         process = subprocess.Popen(["python3", file_path], shell=False)
     except Exception as e:
         print(str(e))
+    return "ok"
 
 if __name__ == '__main__':
     try:
