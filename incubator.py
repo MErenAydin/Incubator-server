@@ -54,7 +54,7 @@ def login():
             user = cursor.fetchone()
             if len(user) > 0:
                 in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user[8].tobytes(), user[2])
-                db_hash = user[7]
+                db_hash = user[7].tobytes()
                 
                 if compare_digest(in_hash, db_hash):
                     # Save the form data to the session object
