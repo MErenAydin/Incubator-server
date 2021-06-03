@@ -6,11 +6,11 @@ import psycopg2
 import redis
 
 # #TODO: read from config file
-# conn = psycopg2.connect(
-#    database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432'
-# )
+conn = psycopg2.connect(
+   database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432'
+)
 
-# cursor = conn.cursor()
+cursor = conn.cursor()
 
 
 app = Flask(__name__)
@@ -27,7 +27,7 @@ server_session = Session(app)
 
 @app.route('/')
 def index():
-    return render_template("login.html")
+    return redirect('/login')
 
 @app.route('/signin-page')
 def signin_page():
@@ -45,17 +45,13 @@ def humidity():
 def login():
     if request.method == 'POST':
         print(request.data)
+        # Do username pdw control
         # Save the form data to the session object
-        session['email'] = request.form['email_address']
-        return redirect(url_for('get_email'))
+        session['userName'] = request.form['userName']
+        session['password'] = request.form['password']
+        return redirect(url_for('index'))
 
-    return """
-        <form method="post">
-            <label for="email">Enter your email address:</label>
-            <input type="email" id="email" name="email_address" required />
-            <button type="submit">Submit</button>
-        </form>
-        """
+    return render_template("login.html")
 
 
 @app.route('/get_email')
