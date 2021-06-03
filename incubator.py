@@ -44,12 +44,15 @@ def humidity():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        print(request.form)
-        # Do username pdw control
-        # Save the form data to the session object
-        session['userName'] = request.form['userName']
-        session['password'] = request.form['password']
-        return redirect(url_for('index'))
+        try:
+            print(request.form)
+            # Do username pdw control
+            # Save the form data to the session object
+            session['userName'] = request.form['userName']
+            session['password'] = request.form['password']
+            return redirect(url_for('index'))
+        except Exception as e:
+            print(e)
 
     return render_template("login.html")
 
