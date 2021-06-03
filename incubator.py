@@ -36,7 +36,7 @@ def signin_page():
     return render_template("signin.html")
 
 @app.route('/index')
-def signin_page():
+def main_view():
     return render_template("index.html")
 
 @app.route('/temperature')
