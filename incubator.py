@@ -27,10 +27,7 @@ server_session = Session(app)
 
 @app.route('/')
 def index():
-    return """
-    <button>
-    """
-    #return render_template("index.html")
+    return render_template("index.html")
 
 @app.route('/temperature')
 def temperature():
