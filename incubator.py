@@ -1,14 +1,15 @@
+import datetime
 from flask import Flask, render_template, render_template_string, request, session, redirect, url_for
 from flask_session import Session
 import json
 import os
 import psycopg2
 import redis
+import hashlib
+from hmac import compare_digest
 
 # #TODO: read from config file
-conn = psycopg2.connect(
-   database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432'
-)
+conn = psycopg2.connect(database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432')
 
 cursor = conn.cursor()
 
@@ -20,6 +21,7 @@ app.secret_key = 'REPLACE_WITH_SECRET_KEY'
 
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
+app.config['PERMANENT_SESSION_LIFETIME '] = datetime.timedelta(minutes=20)
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
 
@@ -47,10 +49,20 @@ def login():
         try:
             print(request.form)
             # Do username pdw control
-            # Save the form data to the session object
-            session['userName'] = request.form['userName']
-            session['password'] = request.form['password']
-            return redirect(url_for('index'))
+            sql = "SELECT * FROM users where userName like {}".format(request.form['userName'])
+            cursor.execute(sql)
+            user = cursor.fetchone()
+            if len(user) > 0:
+                in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user[8].tobytes(), user[2])
+                db_hash = user[7]
+                
+                if compare_digest(in_hash, db_hash):
+                    # Save the form data to the session object
+                    session['userName'] = str(request.form['userName'])
+                    session['userId'] = user[0]
+                    return redirect(url_for('index'))
+                else :
+                    return redirect(url_for('login'))
         except Exception as e:
             print(e)
 
@@ -76,4 +88,3 @@ def delete_email():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
-
