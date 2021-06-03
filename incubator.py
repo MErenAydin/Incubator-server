@@ -70,8 +70,8 @@ def signin():
 
 @app.route('/index/<userId>')
 def main_view(userId = 0):
-    print(session['userId'])
-    if session['userId'] is not None and session['userId'] == userId:
+    if redis.exists('userId') and session['userId'] == userId:
+        print(session['userId'])
         return render_template("index.html")
     else :
         return redirect(url_for('login'))
