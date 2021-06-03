@@ -7,8 +7,13 @@ import psycopg2
 import redis
 import hashlib
 from hmac import compare_digest
+import secrets
+import binascii
 
-# #TODO: read from config file
+#TODO: read from config file
+PWD_ITERATION = 50000
+
+#TODO: read from config file
 conn = psycopg2.connect(database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432')
 
 cursor = conn.cursor()
@@ -31,8 +36,33 @@ server_session = Session(app)
 def index():
     return redirect('/login')
 
-@app.route('/signin-page')
-def signin_page():
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        try:
+            print(request.form)
+            # Do username pdw control
+
+            sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
+            cursor.execute(sql)
+            user = cursor.fetchone()
+            if len(user) <= 0:
+                salt = bytearray(secrets.token_bytes(64))
+                sql = """INSERT INTO users (username, registertime, email, name, surname, pwditeration, pwdhash, pwdsalt)
+                VALUES ('{}', current_timestamp, '{}', '{}', '{}', {}, E'\\\\x{}'::bytea, E'\\\\x{}'::bytea)
+                """.format(
+                    request.form['userName'],
+                    request.form['email'],
+                    request.form['name'],
+                    request.form['surname'],
+                    PWD_ITERATION,
+                    hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), salt, PWD_ITERATION, dklen = 64),
+                    binascii.hexlify(salt),
+                )
+                redirect('login')
+        except Exception as e:
+            print(e)
+
     return render_template("signin.html")
 
 @app.route('/index')
@@ -51,7 +81,6 @@ def humidity():
 def login():
     if request.method == 'POST':
         try:
-            print(request.form)
             # Do username pdw control
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
