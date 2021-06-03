@@ -64,7 +64,7 @@ def login():
                     # Save the form data to the session object
                     session['userName'] = str(request.form['userName'])
                     session['userId'] = user[0]
-                    return redirect(url_for('index'))
+                    return redirect(url_for('main_view'))
                 else :
                     return redirect(url_for('login'))
         except Exception as e:
