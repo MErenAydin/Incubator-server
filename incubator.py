@@ -35,6 +35,10 @@ def index():
 def signin_page():
     return render_template("signin.html")
 
+@app.route('/index')
+def signin_page():
+    return render_template("index.html")
+
 @app.route('/temperature')
 def temperature():
     return "37.75"
@@ -49,11 +53,11 @@ def login():
         try:
             print(request.form)
             # Do username pdw control
-            sql = "SELECT * FROM users where userName like {}".format(request.form['userName'])
+            sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
             user = cursor.fetchone()
             if len(user) > 0:
-                in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user[8].tobytes(), user[2])
+                in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user[8].tobytes(), user[2], dklen = 64)
                 db_hash = user[7].tobytes()
                 
                 if compare_digest(in_hash, db_hash):
