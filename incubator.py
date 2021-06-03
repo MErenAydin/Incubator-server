@@ -28,7 +28,7 @@ app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['PERMANENT_SESSION_LIFETIME '] = datetime.timedelta(minutes=20)
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
+_redis = app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
 
 server_session = Session(app)
 
@@ -70,7 +70,7 @@ def signin():
 
 @app.route('/index/<userId>')
 def main_view(userId = 0):
-    if redis.exists('userId') and session['userId'] == userId:
+    if _redis.exists('userId') and session['userId'] == userId:
         print(session['userId'])
         return render_template("index.html")
     else :
@@ -100,7 +100,7 @@ def login():
                     # Save the form data to the session object
                     session['userName'] = str(request.form['userName'])
                     session['userId'] = user[0]
-                    return redirect(url_for('main_view'))
+                    return redirect(url_for('main_view') + '/' +user[0])
                 else :
                     return redirect(url_for('login'))
         except Exception as e:
