@@ -30,7 +30,7 @@ def index():
     return render_template("login.html")
 
 @app.route('/signin-page')
-def index():
+def signin_page():
     return render_template("signin.html")
 
 @app.route('/temperature')
