@@ -44,7 +44,7 @@ def humidity():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        print(request.data)
+        print(request.form)
         # Do username pdw control
         # Save the form data to the session object
         session['userName'] = request.form['userName']
