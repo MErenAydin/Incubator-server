@@ -46,7 +46,7 @@ def signin():
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
             user = cursor.fetchone()
-            if user and len(user) <= 0:
+            if user is None or len(user) <= 0:
                 salt = bytearray(secrets.token_bytes(64))
                 sql = """INSERT INTO users (username, registertime, email, name, surname, pwditeration, pwdhash, pwdsalt)
                 VALUES ('{}', current_timestamp, '{}', '{}', '{}', {}, E'\\\\x{}'::bytea, E'\\\\x{}'::bytea)
@@ -56,12 +56,12 @@ def signin():
                     request.form['name'],
                     request.form['surname'],
                     PWD_ITERATION,
-                    hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), salt, PWD_ITERATION, dklen = 64),
-                    binascii.hexlify(salt),
+                    binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), salt, PWD_ITERATION, dklen = 64)).decode(),
+                    binascii.hexlify(salt).decode(),
                 )
                 cursor.execute(sql)
                 conn.commit()
-                redirect(url_for('login'))
+                return redirect(url_for('login'))
         except Exception as e:
             print(e)
             conn.rollback()
