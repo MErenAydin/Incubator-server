@@ -29,6 +29,10 @@ server_session = Session(app)
 def index():
     return render_template("login.html")
 
+@app.route('/signin-page')
+def index():
+    return render_template("signin.html")
+
 @app.route('/temperature')
 def temperature():
     return "37.75"
