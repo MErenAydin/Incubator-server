@@ -21,7 +21,7 @@ app.secret_key = 'REPLACE_WITH_SECRET_KEY'
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
 
 server_session = Session(app)
 
@@ -53,7 +53,7 @@ def login():
         <form method="post">
             <label for="email">Enter your email address:</label>
             <input type="email" id="email" name="email_address" required />
-            <button type="submit">Submit</button
+            <button type="submit">Submit</button>
         </form>
         """
 
