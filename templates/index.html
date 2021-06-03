@@ -13,15 +13,15 @@
 <body>
   <!-- HEADER -->
   <div class="header">
-    <h2>ESP-INCUBATOR</h2>
+    <h2>INCUBATOR</h2>
   </div>
   <br>
-  <!-- SICAKLIK NEM OLCUMLERI -->
+  <!-- Sıcaklık NEM OLCUMLERI -->
   <div class="container">
     <table>
       <tr>
         <td>
-          <span class="dht-labels"><i class="fas fa-thermometer-half"></i> SICAKLIK</span>
+          <span class="dht-labels"><i class="fas fa-thermometer-half"></i> Sıcaklık</span>
         </td>
         <td><span id="temperature" class="measurement">%TEMPERATURE%</span></td>
         <td id = "tempStatus" style= "font-size: 1.5em;"><i class="fas fa-minus-square"></i></td>
@@ -50,14 +50,14 @@
     <form action="/post" method="post">
       <table>
         <tr>
-          <td><label for="tempMin">Asgari Sicaklik:</label></td>
+          <td><label for="tempMin">Asgari Sıcaklık:</label></td>
           <td>
             <input class="input" id="tempMin" name="tempMin" type="number" step="0.1" value="%TEMPMIN%" min="25"
               max="50">
           </td>
         </tr>
         <tr>
-          <td><label for="tempMax">Azami Sicaklik:</label></td>
+          <td><label for="tempMax">Azami Sıcaklık:</label></td>
           <td>
             <input class="input" id="tempMax" name="tempMax" type="number" step="0.1" value="%TEMPMAX%" min="25"
               max="50">
@@ -76,7 +76,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="tempOffset">Sicaklik Ofseti:</label></td>
+          <td><label for="tempOffset">Sıcaklık Ofseti:</label></td>
           <td>
             <input class="input" id="tempOffset" name="tempOffset" type="number" step="0.1" value="%TEMPOFFSET%"
               min="-20" max="20">
@@ -90,14 +90,14 @@
           </td>
         </tr>
         <tr>
-          <td><label for="motorInterval">Motor Donme Araligi (dk):</label></td>
+          <td><label for="motorInterval">Motor Dönme Aralığı (dk):</label></td>
           <td>
             <input class="input" id="motorInterval" name="motorInterval" type="number" step="1" value="%MOTORINTERVAL%"
               min="10" max="200000">
           </td>
         </tr>
         <tr>
-          <td><label for="motorTurnTime">Motor Donus Suresi (ms):</label></td>
+          <td><label for="motorTurnTime">Motor Donus Süresi (ms):</label></td>
           <td>
             <input class="input" id="motorTurnTime" name="motorTurnTime" type="number" step="10" value="%MOTORTURNTIME%"
               min="100" max="500000">
@@ -111,21 +111,21 @@
   </div>
   <!-- TARIHLER -->
   <div id="dates" class="tabBody dates" style="display: none;">
-    <h3>TARIHLER</h3>
+    <h3>TARİHLER</h3>
     <br>
     <form action="/startIncubation" method="post">
       <table>
         <tr>
-          <td><label for="tempMin">Baslangic Tarihi:</label></td>
+          <td><label for="tempMin">Başlangıç Tarihi:</label></td>
           <td><input class="input" id="incStartTime" name="incStartTime" type="date" value="%INCSTARTTIME%"></td>
         </tr>
         <tr>
-          <td><label for="tempMin">Cikim modu Tarihi:</label></td>
+          <td><label for="tempMin">Çıkım Modu Tarihi:</label></td>
           <td><input class="input" id="incHatchingModeTime" name="incHatchingModeTime" type="date"
               value="%INCHATCHINGMODETIME%" disabled></td>
         </tr>
         <tr>
-          <td><label for="tempMin">Yaklasik Cikim Tarihi:</label></td>
+          <td><label for="tempMin">Yaklaşık Çıkım Tarihi:</label></td>
           <td><input class="input" id="incEndTime" name="incEndTime" type="date" value="%INCENDTIME%" disabled></td>
         </tr>
       </table>
@@ -136,7 +136,7 @@
   </div>
   <!-- YUMURTA TIPI SECIMI-->
   <div id="eggTypes" class="tabBody settings" style="display: none;">
-    <h3>YUMURTA TIPI SECIMI</h3>
+    <h3>YUMURTA TİPİ SEÇİMİ</h3>
     <br>
     <form action="/changeEggType" method="post">
       <table>
@@ -147,7 +147,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="duck">Ordek:</label></td>
+          <td><label for="duck">Ördek:</label></td>
           <td>
             <input id="duck" name="eggTypesRadio" type="radio" value="duck">
           </td>
@@ -159,19 +159,19 @@
           </td>
         </tr>
         <tr>
-          <td><label for="quail">Bildircin:</label></td>
+          <td><label for="quail">Bıldırcın:</label></td>
           <td>
             <input id="quail" name="eggTypesRadio" type="radio" value="quail">
           </td>
         </tr>
         <tr>
-          <td><label for="pheasant">Sulun:</label></td>
+          <td><label for="pheasant">Sülün:</label></td>
           <td>
             <input id="pheasant" name="eggTypesRadio" type="radio" value="pheasant">
           </td>
         </tr>
         <tr>
-          <td><label for="peacock">Tavuskusu:</label></td>
+          <td><label for="peacock">Tavuskuşu:</label></td>
           <td>
             <input id="peacock" name="eggTypesRadio" type="radio" value="peacock">
           </td>
@@ -183,7 +183,7 @@
           </td>
         </tr>
         <tr>
-          <td><label for="pigeon">Guvercin:</label></td>
+          <td><label for="pigeon">Güvercin:</label></td>
           <td>
             <input id="pigeon" name="eggTypesRadio" type="radio" value="pigeon">
           </td>
@@ -201,52 +201,52 @@
     <form action="/calibrate" method="post">
       <table>
         <tr>
-          <td><label for="tMin">Dusuk Kalibrasyon Derecesi:</label></td>
+          <td><label for="tMin">Düşük Kalibrasyon Derecesi:</label></td>
           <td>
             <input class="input" id="tMin" name="tMin" type="number" step="0.1" value="%TMIN%" min="-40" max="50">
           </td>
         </tr>
         <tr>
-          <td><label for="tMax">Yuksek Kalibrasyon Derecesi:</label></td>
+          <td><label for="tMax">Yüksek Kalibrasyon Derecesi:</label></td>
           <td>
             <input class="input" id="tMax" name="tMax" type="number" step="0.1" value="%TMAX%" min="-40" max="50">
           </td>
         </tr>
         <tr>
-          <td><label for="tMinMeasured">Dusuk Olculen Derece:</label></td>
+          <td><label for="tMinMeasured">Düşük Ölçülen Derece:</label></td>
           <td>
             <input class="input" id="tMinMeasured" name="tMinMeasured" type="number" step="0.1" value="%TMINMEASURED%"
               min="-40" max="50">
           </td>
         </tr>
         <tr>
-          <td><label for="tMaxMeasured">Yuksek Olculen Derece:</label></td>
+          <td><label for="tMaxMeasured">Yüksek Ölçülen Derece:</label></td>
           <td>
             <input class="input" id="tMaxMeasured" name="tMaxMeasured" type="number" step="0.1" value="%TMAXMEASURED%"
               min="-40" max="50">
           </td>
         </tr>
         <tr>
-          <td><label for="hMin">Dusuk Kalibrasyon Nem:</label></td>
+          <td><label for="hMin">Düşük Kalibrasyon Nem:</label></td>
           <td>
             <input class="input" id="hMin" name="hMin" type="number" step="0.1" value="%HMIN%" min="0" max="90">
           </td>
         </tr>
         <tr>
-          <td><label for="hMax">Yuksek Kalibrasyon Nem:</label></td>
+          <td><label for="hMax">Yüksek Kalibrasyon Nem:</label></td>
           <td>
             <input class="input" id="hMax" name="hMax" type="number" step="0.1" value="%HMAX%" min="0" max="90">
           </td>
         </tr>
         <tr>
-          <td><label for="hMinMeasured">Dusuk Olculen Nem:</label></td>
+          <td><label for="hMinMeasured">Düşük Ölçülen Nem:</label></td>
           <td>
             <input class="input" id="hMinMeasured" name="hMinMeasured" type="number" step="0.1" value="%HMINMEASURED%"
               min="0" max="90">
           </td>
         </tr>
         <tr>
-          <td><label for="hMaxMeasured">Yuksek Olculen Nem:</label></td>
+          <td><label for="hMaxMeasured">Yüksek Ölçülen Nem:</label></td>
           <td>
             <input class="input" id="hMaxMeasured" name="hMaxMeasured" type="number" step="0.1" value="%HMAXMEASURED%"
               min="0" max="90">
@@ -260,11 +260,11 @@
     </form>
     
     <form action="/turnMotor" method="post" id="turnMotor">
-      <label for="motorForceTurnTime">Motoru sureli dondur(ms): </label>
+      <label for="motorForceTurnTime">Motoru Süreli Döndür(ms): </label>
       <input class="input" id="motorForceTurnTime" name="motorTurnTime" type="number" step="10" value="%MOTORTURNTIME%"
         min="100" max="500000">
       <button style="font-size: 0.85em;" class="button" type="submit" form="turnMotor"><i class="fas fa-redo"></i>
-        DONDUR</button>
+        DÖNDÜR</button>
     </form>
   </div>
 </body>
