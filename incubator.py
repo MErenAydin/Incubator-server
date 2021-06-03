@@ -59,7 +59,7 @@ def signin():
                     hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), salt, PWD_ITERATION, dklen = 64),
                     binascii.hexlify(salt),
                 )
-                redirect('login')
+                redirect(url_for('login'))
         except Exception as e:
             print(e)
 
