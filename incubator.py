@@ -25,7 +25,7 @@ app = Flask(__name__)
 app.secret_key = 'REPLACE_WITH_SECRET_KEY'
 
 app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME '] = datetime.timedelta(minutes=20)
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
