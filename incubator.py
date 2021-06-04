@@ -4,11 +4,13 @@ from flask_session import Session
 import json
 import os
 import psycopg2
+import psycopg2.extras
 import redis
 import hashlib
 from hmac import compare_digest
 import secrets
 import binascii
+
 
 #TODO: read from config file
 PWD_ITERATION = 50000
@@ -22,8 +24,8 @@ app = Flask(__name__)
 #TODO: read from config file
 app.config['SECRET_KEY'] = 'REPLACE_WITH_SECRET_KEY'
 app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME '] = datetime.timedelta(minutes=20)
+app.config['SESSION_PERMANENT'] = False
+app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=20)
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
 
@@ -36,8 +38,8 @@ def index():
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             # Do username pdw control
 
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
@@ -78,29 +80,11 @@ def main_view(userId = 0):
         return redirect(url_for('login'))
         print(e)
 
-@app.route('/temperature/<incubatorId>', methods=['GET', 'POST'])
-def temperature(incubatorId = 0):
-    return "37.75"
-
-@app.route('/humidity/<incubatorId>', methods=['GET', 'POST'])
-def humidity(incubatorId = 0):
-    if request.method == 'POST':
-        try:
-            #cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            #cursor.close()
-            print(incubatorId)
-            print(request.data)
-        except Exception as e:
-            #cursor.close()
-            print(e)
-
-    return "58.65"
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
-            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             # Do username pdw control
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
