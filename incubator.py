@@ -38,7 +38,6 @@ def signin():
     if request.method == 'POST':
         try:
             cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-            print(request.form)
             # Do username pdw control
 
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
@@ -79,12 +78,24 @@ def main_view(userId = 0):
         return redirect(url_for('login'))
         print(e)
 
-@app.route('/temperature')
-def temperature():
+@app.route('/temperature/<incubatorId>', methods=['GET', 'POST'])
+def temperature(incubatorId = 0):
     return "37.75"
 
-@app.route('/humidity')
-def humidity():
+@app.route('/humidity/<incubatorId>', methods=['GET', 'POST'])
+def humidity(incubatorId = 0):
+    if request.method == 'POST':
+        try:
+            #cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+            #cursor.close()
+            print(incubatorId)
+            print(request.get_json(force= True))
+            print(request.json)
+            print(request.data)
+        except Exception as e:
+            #cursor.close()
+            print(e)
+
     return "58.65"
 
 @app.route('/login', methods=['GET', 'POST'])
