@@ -312,20 +312,20 @@
   //   xhttp.send();
   // }, 1000);
 
-  // var tabToggle = function (event) {
-  //   document.getElementById("dates").style.display = "none";
-  //   document.getElementById("eggTypes").style.display = "none";
-  //   document.getElementById("settings").style.display = "none";
-  //   document.getElementById("calibration").style.display = "none";
-  //   if (event.target.id === "settingsTab")
-  //     document.getElementById("settings").style.display = "flex";
-  //   if (event.target.id === "datesTab")
-  //     document.getElementById("dates").style.display = "flex";
-  //   if (event.target.id === "eggTypesTab")
-  //     document.getElementById("eggTypes").style.display = "flex";
-  //   if (event.target.id === "calibrationTab")
-  //     document.getElementById("calibration").style.display = "flex";
-  // }
+  var tabToggle = function (event) {
+    document.getElementById("dates").style.display = "none";
+    document.getElementById("eggTypes").style.display = "none";
+    document.getElementById("settings").style.display = "none";
+    document.getElementById("calibration").style.display = "none";
+    if (event.target.id === "settingsTab")
+      document.getElementById("settings").style.display = "flex";
+    if (event.target.id === "datesTab")
+      document.getElementById("dates").style.display = "flex";
+    if (event.target.id === "eggTypesTab")
+      document.getElementById("eggTypes").style.display = "flex";
+    if (event.target.id === "calibrationTab")
+      document.getElementById("calibration").style.display = "flex";
+  }
 
 </script>
 
