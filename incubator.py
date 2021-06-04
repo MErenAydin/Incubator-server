@@ -16,14 +16,11 @@ PWD_ITERATION = 50000
 #TODO: read from config file
 conn = psycopg2.connect(database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432')
 
-cursor = conn.cursor()
-
 
 app = Flask(__name__)
 
 #TODO: read from config file
-app.secret_key = 'REPLACE_WITH_SECRET_KEY'
-
+app.config['SECRET_KEY'] = 'REPLACE_WITH_SECRET_KEY'
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME '] = datetime.timedelta(minutes=20)
@@ -40,6 +37,7 @@ def index():
 def signin():
     if request.method == 'POST':
         try:
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             print(request.form)
             # Do username pdw control
 
@@ -61,8 +59,10 @@ def signin():
                 )
                 cursor.execute(sql)
                 conn.commit()
+                cursor.close()
                 return redirect(url_for('login'))
         except Exception as e:
+            cursor.close()
             print(e)
             conn.rollback()
 
@@ -91,22 +91,25 @@ def humidity():
 def login():
     if request.method == 'POST':
         try:
+            cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             # Do username pdw control
             sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
             cursor.execute(sql)
             user = cursor.fetchone()
             if len(user) > 0:
-                in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user[8].tobytes(), user[2], dklen = 64)
-                db_hash = user[7].tobytes()
+                in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user['pwdsalt'].tobytes(), user['pwditeration'], dklen = 64)
+                db_hash = user['pwdhash'].tobytes()
                 
                 if compare_digest(in_hash, db_hash):
                     # Save the form data to the session object
                     session['userName'] = str(request.form['userName'])
-                    session['userId'] = user[0]
-                    return redirect(url_for('main_view', userId = user[0]))
+                    session['userId'] = user['userid']
+                    return redirect(url_for('main_view', userId = user['userid']))
                 else :
                     return redirect(url_for('login'))
+            cursor.close()
         except Exception as e:
+            cursor.close()
             print(e)
 
     try:
