@@ -89,8 +89,6 @@ def humidity(incubatorId = 0):
             #cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
             #cursor.close()
             print(incubatorId)
-            print(request.get_json(force= True))
-            print(request.json)
             print(request.data)
         except Exception as e:
             #cursor.close()
