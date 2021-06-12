@@ -129,8 +129,9 @@ def login():
             print(e)
 
     try:
-        if session['userId'] > 0:
-            return redirect(url_for('main_view', userId = session['userId']))
+        nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
+        if session['userId'] > 0 and nodes[0] > 0:
+            return redirect(url_for('main_view', userId = session['userId'], nodeId = nodes[0]))
     except Exception as e:
         print(e)
 
