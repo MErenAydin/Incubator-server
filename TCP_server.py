@@ -44,8 +44,28 @@ class connection_handler(Thread):
         self.node_id = 0
         self.node_name = "" 
         self.redis = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
+    
+    def run(self):
+        try:
+            while True:
+                if not self.safe_start:
+                    break
+                is_data_ready = select.select([self.connection], [], [], self.timeout)[0]
+                if is_data_ready:
+                    data = self.connection.recv(8)
+                    self.redis.mset({"Node-{}".format(self.node_id): data})
+                else:
+                    #Timeout reached: Do stuff in here
+                    pass
 
-    def start(self):
+
+        except Exception as e:
+            print(e)
+            self.connection.close()
+        
+        self.connection.close()
+
+    def setup(self):
         cursor = self.db_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
             is_data_ready = select.select([self.connection], [], [], self.timeout)[0]
@@ -61,32 +81,15 @@ class connection_handler(Thread):
                 cursor.execute(sql)
                 users = cursor.fetchall()
                 if users is not None and len(users) > 0:
-                    #send http post request
-                    pass
-                cursor.close()
+                    self.node_id = users[0]['nodeid']
+                    self.node_name = users[0]['name']
             else:
                 self.safe_start = False
-                cursor.close()
                 self.db_conn.close()
+                self.connection.close()
+            cursor.close()
             
         except Exception as e:
             print(e)
-        self.run()
-    
-    def run(self):
-        try:
-            while True:
-                if not self.safe_start:
-                    break
-                is_data_ready = select.select([self.connection], [], [], self.timeout)[0]
-                if is_data_ready:
-                    data = self.connection.recv(8)
-                    self.redis.mset({"Node-" + self.node_id: data})
-                else:
-                    #Timeout reached: Do stuff in here
-                    pass
-
-
-        except Exception as e:
-            print(e)
-
+            cursor.close()
+            self.safe_start = False

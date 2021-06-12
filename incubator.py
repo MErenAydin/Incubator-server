@@ -119,7 +119,8 @@ def login():
                         session['nodes'] = struct.pack("{}Q".format(len(user_nodes)), *user_nodes)
                     else:
                         session['nodes'] = bytes(8)
-                    return redirect(url_for('main_view', userId = user['userid']))
+                    # TODO: redirect node selection page
+                    return redirect(url_for('main_view', userId = user['userid'], nodeId = nodes[0]))
                 else :
                     return redirect(url_for('login'))
             cursor.close()
