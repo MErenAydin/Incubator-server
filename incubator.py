@@ -82,8 +82,8 @@ def main_view(userId = 0, nodeId = 0):
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
         if session['userId'] == int(userId) and nodeId in nodes:
             return render_template("index.html")
-        else :
-            return redirect(url_for('login'))
+        # else :
+        #     return redirect(url_for('login'))
     except Exception as e:
         print(e)
         return redirect(url_for('login'))

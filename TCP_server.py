@@ -46,6 +46,7 @@ class connection_handler(Thread):
         self.redis = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
     
     def run(self):
+        self.setup()
         try:
             while True:
                 if not self.safe_start:
