@@ -10,6 +10,8 @@ import hashlib
 from hmac import compare_digest
 import secrets
 import binascii
+from TCP_server import socket_server
+import struct
 
 
 #TODO: read from config file
@@ -21,15 +23,19 @@ conn = psycopg2.connect(database="incubator", user='postgres', password='"|sJ7\\
 
 app = Flask(__name__)
 
+redis_client = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
+
 #TODO: read from config file
 app.config['SECRET_KEY'] = 'REPLACE_WITH_SECRET_KEY'
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=20)
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_REDIS'] = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
+app.config['SESSION_REDIS'] = redis_client
 
 server_session = Session(app)
+
+tcp_server = socket_server("0.0.0.0", 4096)
 
 @app.route('/')
 def index():
@@ -69,16 +75,17 @@ def signin():
 
     return render_template("signin.html")
 
-@app.route('/index/<userId>')
-def main_view(userId = 0):
+@app.route('/index/<userId>/<nodeId>')
+def main_view(userId = 0, nodeId = 0):
     try:
-        if session['userId'] == int(userId):
+        nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
+        if session['userId'] == int(userId) and nodeId in nodes:
             return render_template("index.html")
         else :
             return redirect(url_for('login'))
     except Exception as e:
-        return redirect(url_for('login'))
         print(e)
+        return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -97,6 +104,20 @@ def login():
                     # Save the form data to the session object
                     session['userName'] = str(request.form['userName'])
                     session['userId'] = user['userid']
+                    sql= """
+                    SELECT n.nodeid FROM users u
+                    INNER JOIN usernode un ON u.userid = un.userid
+                    INNER JOIN nodes n ON n.nodeid = un.nodeid
+                    WHERE u.userid = {}""".format(user['userid'])
+                    cursor.execute(sql)
+                    nodes = cursor.fetchall()
+                    user_nodes = []
+                    for node in nodes:
+                        user_nodes.append(node['nodeid'])
+                    if len(user_nodes) > 0:
+                        session['nodes'] = struct.pack("{}Q".format(len(user_nodes)), *user_nodes)
+                    else:
+                        session['nodes'] = bytes(8)
                     return redirect(url_for('main_view', userId = user['userid']))
                 else :
                     return redirect(url_for('login'))
@@ -113,6 +134,39 @@ def login():
 
     return render_template("login.html")
 
+@app.route('/temperature/<nodeId>', methods=['GET'])
+def temperature(nodeId = 0):
+    try:
+        nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
+        if nodeId in nodes:
+            # Do username pdw control
+            if redis_client.exists("Node-{}".format(nodeId)) > 0:
+                temperature , _ = struct.unpack("ff",session["Node-{}".format(nodeId)])
+                return temperature
+            
+            else:
+                return "error"
+        else:
+            return redirect(url_for('login'))
+    except Exception as e:
+        print(e)
+
+@app.route('/humidity/<nodeId>', methods=['GET'])
+def humidity(nodeId = 0):
+    try:
+        nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
+        if nodeId in nodes:
+            # Do username pdw control
+            if redis_client.exists("Node-{}".format(nodeId)) > 0:
+                _ , humidity = struct.unpack("ff",session["Node-{}".format(nodeId)])
+                return humidity
+            
+            else:
+                return "error"
+        else:
+            return redirect(url_for('login'))
+    except Exception as e:
+        print(e)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

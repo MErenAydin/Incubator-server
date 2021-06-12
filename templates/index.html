@@ -270,47 +270,49 @@
 </body>
 
 <script>
-  // setInterval(function () {
-  //   var xhttp = new XMLHttpRequest();
-  //   xhttp.onreadystatechange = function () {
-  //     var icon = document.getElementById("tempStatus");
-  //     var tempMin = +document.getElementById("tempMin").value;
-  //     var tempMax = +document.getElementById("tempMax").value;
-  //     if (this.readyState == 4 && this.status == 200) {
-  //       document.getElementById("temperature").innerHTML = this.responseText;
-  //       var temp = parseFloat(this.responseText);
-  //       if(temp > tempMax)
-  //         icon.innerHTML = '<i class="fas fa-caret-square-down"></i>';
-  //       else if (temp < tempMin)
-  //         icon.innerHTML = '<i class="fas fa-caret-square-up"></i>';
-  //       else
-  //         icon.innerHTML = '<i class="fas fa-minus-square"></i>';
-  //     }
-  //   };
-  //   xhttp.open("GET", "/temperature", true);
-  //   xhttp.send();
-  // }, 1000);
+  var path = window.location.pathname.split('/');
+  var nodeId = path[path.length - 1]
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      var icon = document.getElementById("tempStatus");
+      var tempMin = +document.getElementById("tempMin").value;
+      var tempMax = +document.getElementById("tempMax").value;
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("temperature").innerHTML = this.responseText;
+        var temp = parseFloat(this.responseText);
+        if(temp > tempMax)
+          icon.innerHTML = '<i class="fas fa-caret-square-down"></i>';
+        else if (temp < tempMin)
+          icon.innerHTML = '<i class="fas fa-caret-square-up"></i>';
+        else
+          icon.innerHTML = '<i class="fas fa-minus-square"></i>';
+      }
+    };
+    xhttp.open("GET", "/temperature/" + nodeId, true);
+    xhttp.send();
+  }, 1000);
 
-  // setInterval(function () {
-  //   var xhttp = new XMLHttpRequest();
-  //   xhttp.onreadystatechange = function () {
-  //     var icon = document.getElementById("humStatus");
-  //     var humMin = +document.getElementById("humMin").value;
-  //     var humMax = +document.getElementById("humMax").value;
-  //     if (this.readyState == 4 && this.status == 200) {
-  //       document.getElementById("humidity").innerHTML = this.responseText;
-  //       var hum = parseFloat(this.responseText);
-  //       if(hum > humMax)
-  //         icon.innerHTML = '<i class="fas fa-caret-square-down"></i>';
-  //       else if (hum < humMin)
-  //         icon.innerHTML = '<i class="fas fa-caret-square-up"></i>';
-  //       else
-  //         icon.innerHTML = '<i class="fas fa-minus-square"></i>';
-  //     }
-  //   };
-  //   xhttp.open("GET", "/humidity", true);
-  //   xhttp.send();
-  // }, 1000);
+  setInterval(function () {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      var icon = document.getElementById("humStatus");
+      var humMin = +document.getElementById("humMin").value;
+      var humMax = +document.getElementById("humMax").value;
+      if (this.readyState == 4 && this.status == 200) {
+        document.getElementById("humidity").innerHTML = this.responseText;
+        var hum = parseFloat(this.responseText);
+        if(hum > humMax)
+          icon.innerHTML = '<i class="fas fa-caret-square-down"></i>';
+        else if (hum < humMin)
+          icon.innerHTML = '<i class="fas fa-caret-square-up"></i>';
+        else
+          icon.innerHTML = '<i class="fas fa-minus-square"></i>';
+      }
+    };
+    xhttp.open("GET", "/humidity/" + nodeId, true);
+    xhttp.send();
+  }, 1000);
 
   var tabToggle = function (event) {
     document.getElementById("dates").style.display = "none";
