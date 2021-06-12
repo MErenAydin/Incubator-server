@@ -54,6 +54,7 @@ class connection_handler(Thread):
                 is_data_ready = select.select([self.connection], [], [], self.timeout)[0]
                 if is_data_ready:
                     data = self.connection.recv(8)
+                    print("Data Received: {}".format(data))
                     self.redis.mset({"Node-{}".format(self.node_id): data})
                 else:
                     #Timeout reached: Do stuff in here

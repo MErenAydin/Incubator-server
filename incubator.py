@@ -76,11 +76,11 @@ def signin():
 
     return render_template("signin.html")
 
-@app.route('/index/<userId>/<nodeId>')
+@app.route('/index/<int:userId>/<int:nodeId>')
 def main_view(userId = 0, nodeId = 0):
     try:
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
-        if session['userId'] == int(userId) and nodeId in nodes:
+        if session['userId'] == int(userId) and int(nodeId) in nodes:
             return render_template("index.html")
         # else :
         #     return redirect(url_for('login'))
@@ -129,23 +129,24 @@ def login():
             print(e)
 
     try:
-        nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
-        if session['userId'] > 0 and nodes[0] > 0:
-            return redirect(url_for('main_view', userId = session['userId'], nodeId = nodes[0]))
+        if 'nodes' in session.keys():
+            nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
+            if session['userId'] > 0 and nodes[0] > 0:
+                return redirect(url_for('main_view', userId = session['userId'], nodeId = nodes[0]))
     except Exception as e:
         print(e)
 
     return render_template("login.html")
 
-@app.route('/temperature/<nodeId>', methods=['GET'])
+@app.route('/temperature/<int:nodeId>', methods=['GET'])
 def temperature(nodeId = 0):
     try:
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
         if nodeId in nodes:
             # Do username pdw control
             if redis_client.exists("Node-{}".format(nodeId)) > 0:
-                temperature , _ = struct.unpack("ff",session["Node-{}".format(nodeId)])
-                return temperature
+                temperature , _ = struct.unpack("ff", redis_client.get("Node-{}".format(nodeId)))
+                return "{:.2f}".format(temperature)
             
             else:
                 return "error"
@@ -154,15 +155,15 @@ def temperature(nodeId = 0):
     except Exception as e:
         print(e)
 
-@app.route('/humidity/<nodeId>', methods=['GET'])
+@app.route('/humidity/<int:nodeId>', methods=['GET'])
 def humidity(nodeId = 0):
     try:
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
         if nodeId in nodes:
             # Do username pdw control
             if redis_client.exists("Node-{}".format(nodeId)) > 0:
-                _ , humidity = struct.unpack("ff",session["Node-{}".format(nodeId)])
-                return humidity
+                _ , humidity = struct.unpack("ff", redis_client.get("Node-{}".format(nodeId)))
+                return "{:.2f}".format(humidity)
             
             else:
                 return "error"
