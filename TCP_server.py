@@ -17,13 +17,16 @@ class socket_server(Thread):
         self.port = port
         try:
             self.socket.bind((self.ip, self.port))
+            print("TCP socket opened on {}:{}".format(self.ip, self.port))
         except Exception as e:
             print(str(e))
     
     def run(self):
         self.socket.listen()
+        print("TCP socket started to listen")
         while True:
             client, _address = self.socket.accept()
+            print("TCP socket accepted a connection on {}".format(_address))
             handler = connection_handler(client)
             handler.start()
         self.socket.close()
@@ -34,7 +37,7 @@ class connection_handler(Thread):
         Thread.__init__(self)
         self.connection = connection
         self.timeout = 60
-        self.ESP_key = ""
+        self.node_key = ""
         self.safe_start = True
         self.db_conn = psycopg2.connect(database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432')
         self.users = object()
@@ -47,13 +50,14 @@ class connection_handler(Thread):
         try:
             is_data_ready = select.select([self.connection], [], [], self.timeout)[0]
             if is_data_ready:
-                self.ESP_key = self.connection.recv(64).decode('utf-8')
+                self.node_key = self.connection.recv(64).decode('utf-8')
+                print("Node Key: {}".format(self.node_key))
                 sql = """
                 SELECT u.userid, n.nodeid, n.name FROM users u
                 INNER JOIN usernode un ON u.userid = un.userid
                 INNER JOIN nodes n ON n.nodeid = un.nodeid
                 WHERE n.nodekey = '{}'
-                """.format(self.ESP_key)
+                """.format(self.node_key)
                 cursor.execute(sql)
                 users = cursor.fetchall()
                 if users is not None and len(users) > 0:
@@ -76,7 +80,7 @@ class connection_handler(Thread):
                     break
                 is_data_ready = select.select([self.connection], [], [], self.timeout)[0]
                 if is_data_ready:
-                    data = self.connection.recv(64)
+                    data = self.connection.recv(8)
                     self.redis.mset({"Node-" + self.node_id: data})
                 else:
                     #Timeout reached: Do stuff in here

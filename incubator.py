@@ -36,6 +36,7 @@ app.config['SESSION_REDIS'] = redis_client
 server_session = Session(app)
 
 tcp_server = socket_server("0.0.0.0", 4096)
+tcp_server.start()
 
 @app.route('/')
 def index():
