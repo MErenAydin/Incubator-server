@@ -7,7 +7,7 @@
     integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../static/style.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='/style.css') }}">
 </head>
 
 <body>
@@ -16,21 +16,21 @@
     <h2>INCUBATOR</h2>
   </div>
   <br>
-  <!-- Sıcaklık NEM OLCUMLERI -->
+  <!-- SICAKLIK NEM OLCUMLERI -->
   <div class="container">
     <table>
       <tr>
         <td>
           <span class="dht-labels"><i class="fas fa-thermometer-half"></i> SICAKLIK</span>
         </td>
-        <td><span id="temperature" class="measurement">%TEMPERATURE%</span></td>
+        <td><span id="temperature" class="measurement"></span></td>
         <td id = "tempStatus" style= "font-size: 1.5em;"><i class="fas fa-minus-square"></i></td>
       </tr>
       <tr>
         <td>
           <span class="dht-labels"><i class="fas fa-tint"></i> NEM</span>
         </td>
-        <td><span id="humidity" class="measurement">%HUMIDITY%</span></td>
+        <td><span id="humidity" class="measurement"></span></td>
         <td id = "humStatus" style= "font-size: 1.5em;"><i class="fas fa-minus-square"></i></td>
       </tr>
     </table>
@@ -47,7 +47,7 @@
   <div id="settings" class="tabBody settings">
     <h3>AYARLAR</h3>
     <br>
-    <form action="/post" method="post">
+    <form action="/save_settings?settingsType=1&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
       <table>
         <tr>
           <td><label for="tempMin">Asgari Sıcaklık:</label></td>
@@ -113,7 +113,7 @@
   <div id="dates" class="tabBody dates" style="display: none;">
     <h3>TARİHLER</h3>
     <br>
-    <form action="/startIncubation" method="post">
+    <form action="/save_settings?settingsType=2&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
       <table>
         <tr>
           <td><label for="tempMin">Başlangıç Tarihi:</label></td>
@@ -138,7 +138,7 @@
   <div id="eggTypes" class="tabBody settings" style="display: none;">
     <h3>YUMURTA TİPİ SEÇİMİ</h3>
     <br>
-    <form action="/changeEggType" method="post">
+    <form action="/save_settings?settingsType=3&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
       <table>
         <tr>
           <td><label for="chicken">Tavuk:</label></td>
@@ -196,9 +196,9 @@
   </div>
   <!-- KALIBRASYON -->
   <div id="calibration" class="tabBody settings" style="display: none;">
-    <h3>KALIBRASYON</h3>
+    <h3>KALİBRASYON</h3>
     <br>
-    <form action="/calibrate" method="post">
+    <form action="/save_settings?settingsType=4&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
       <table>
         <tr>
           <td><label for="tMin">Düşük Kalibrasyon Derecesi:</label></td>
@@ -259,7 +259,7 @@
       <hr>
     </form>
     
-    <form action="/turnMotor" method="post" id="turnMotor">
+    <form action="/save_settings?settingsType=5&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post" id="turnMotor">
       <label for="motorForceTurnTime">Motoru Süreli Döndür(ms): </label>
       <input class="input" id="motorForceTurnTime" name="motorTurnTime" type="number" step="10" value="%MOTORTURNTIME%"
         min="100" max="500000">

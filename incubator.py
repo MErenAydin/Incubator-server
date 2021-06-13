@@ -81,9 +81,9 @@ def main_view(userId = 0, nodeId = 0):
     try:
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
         if session['userId'] == int(userId) and int(nodeId) in nodes:
-            return render_template("index.html")
-        # else :
-        #     return redirect(url_for('login'))
+            return render_template("index.html" , prm_nodeId = nodeId, prm_userId = userId)
+        else :
+            return "You Have No Node"
     except Exception as e:
         print(e)
         return redirect(url_for('login'))
@@ -145,15 +145,17 @@ def temperature(nodeId = 0):
         if nodeId in nodes:
             # Do username pdw control
             if redis_client.exists("Node-{}".format(nodeId)) > 0:
-                temperature , _ = struct.unpack("ff", redis_client.get("Node-{}".format(nodeId)))
+                data = redis_client.get("Node-{}".format(nodeId))
+                temperature , _ = struct.unpack("ff", data)
                 return "{:.2f}".format(temperature)
             
             else:
                 return "error"
         else:
-            return redirect(url_for('login'))
+            return "error"
     except Exception as e:
         print(e)
+        return "error"
 
 @app.route('/humidity/<int:nodeId>', methods=['GET'])
 def humidity(nodeId = 0):
@@ -162,15 +164,27 @@ def humidity(nodeId = 0):
         if nodeId in nodes:
             # Do username pdw control
             if redis_client.exists("Node-{}".format(nodeId)) > 0:
-                _ , humidity = struct.unpack("ff", redis_client.get("Node-{}".format(nodeId)))
+                data = redis_client.get("Node-{}".format(nodeId))
+                _ , humidity = struct.unpack("ff", data)
                 return "{:.2f}".format(humidity)
             
             else:
                 return "error"
         else:
-            return redirect(url_for('login'))
+            return "error"
     except Exception as e:
         print(e)
+        return "error"
+
+@app.route('/save_settings', methods=['POST'])
+def save_settings():
+    settings_type = request.args.get("settingsType")
+    node_id = request.args.get("nodeId")
+    user_id = request.args.get("userId")
+    settings_dict = request.form.to_dict()
+    settings_dict["settings_type"] = settings_type
+    redis_client.mset({"Node-{}-settings".format(node_id): json.dumps(settings_dict).encode('utf-8')})
+    return redirect(url_for('main_view', userId = user_id, nodeId = node_id))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

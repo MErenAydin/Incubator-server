@@ -1,9 +1,8 @@
 import socket
-from threading import Thread
+from threading import Thread,Condition
 import select
 import psycopg2
 import psycopg2.extras
-import struct
 import redis
 from redis.client import parse_client_list
 
@@ -15,6 +14,7 @@ class socket_server(Thread):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.ip = ip
         self.port = port
+        self.condition = Condition()
         try:
             self.socket.bind((self.ip, self.port))
             print("TCP socket opened on {}:{}".format(self.ip, self.port))
@@ -22,19 +22,22 @@ class socket_server(Thread):
             print(str(e))
     
     def run(self):
-        self.socket.listen()
-        print("TCP socket started to listen")
-        while True:
-            client, _address = self.socket.accept()
-            print("TCP socket accepted a connection on {}".format(_address))
-            handler = connection_handler(client)
-            handler.start()
+        try:
+            self.socket.listen()
+            print("TCP socket started to listen")
+            while True:
+                client, _address = self.socket.accept()
+                print("TCP socket accepted a connection on {}".format(_address))
+                handler = connection_handler(client ,self.condition)
+                handler.start()
+        except Exception as e:
+            print(str(e))
         self.socket.close()
 
 class connection_handler(Thread):
 
-    def __init__(self, connection):
-        Thread.__init__(self)
+    def __init__(self, connection, condition):
+        Thread.__init__(self, args=(condition,))
         self.connection = connection
         self.timeout = 60
         self.node_key = ""
@@ -44,9 +47,12 @@ class connection_handler(Thread):
         self.node_id = 0
         self.node_name = "" 
         self.redis = redis.Redis(host='localhost', port=6379, db=0, password='zHRyp2n34Rgv6VTFgkrj')
-    
+        self.condition = condition
+
     def run(self):
         self.setup()
+        redis_node = "Node-{}".format(self.node_id)
+        redis_key = "Node-{}-settings".format(self.node_id)
         try:
             while True:
                 if not self.safe_start:
@@ -54,18 +60,35 @@ class connection_handler(Thread):
                 is_data_ready = select.select([self.connection], [], [], self.timeout)[0]
                 if is_data_ready:
                     data = self.connection.recv(8)
-                    print("Data Received: {}".format(data))
-                    self.redis.mset({"Node-{}".format(self.node_id): data})
+                    if data != b'':
+                        print("Data Received: {}".format(data))
+                        self.redis.mset({redis_node: data})
+                    else:
+                        self.safe_start = False
                 else:
                     #Timeout reached: Do stuff in here
                     pass
+                
+                if self.redis.exists(redis_key) > 0:
+                    settings = self.redis.get(redis_key)
+                    self.redis.delete(redis_key)
+                    self.connection.send(settings)
 
 
         except Exception as e:
             print(e)
             self.connection.close()
+            if self.redis.exists(redis_key) > 0:
+                self.redis.delete(redis_key)
+            if self.redis.exists(redis_node) > 0:
+                self.redis.delete(redis_node)
+            
         
         self.connection.close()
+        if self.redis.exists(redis_key) > 0:
+            self.redis.delete(redis_key)
+        if self.redis.exists(redis_node) > 0:
+            self.redis.delete(redis_node)
 
     def setup(self):
         cursor = self.db_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)

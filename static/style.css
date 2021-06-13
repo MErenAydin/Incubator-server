@@ -85,6 +85,8 @@ td:nth-child(2){
     color:#203647;
     font-size: 1.5em;
     margin-bottom: 4px;
+    display: flex;
+    justify-content: space-around;
 }
 
 .input{
