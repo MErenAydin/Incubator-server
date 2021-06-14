@@ -53,10 +53,10 @@
     <i id="calibrationTab" class="tab fas fa-tools" onclick="tabToggle(event)"></i>
   </div>
   <!-- AYARLAR -->
-  <div id="settings" class="tabBody settings">
+  <div id="settings" class="tabBody settings" style="display: none;">
     <h3>AYARLAR</h3>
     <br>
-    <form action="/save_settings?settingsType=1&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form action="/save_settings?settingsType=1&tab=settings&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="tempMin">Asgari Sıcaklık:</label></td>
@@ -122,20 +122,20 @@
   <div id="dates" class="tabBody dates" style="display: none;">
     <h3>TARİHLER</h3>
     <br>
-    <form action="/save_settings?settingsType=2&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form action="/save_settings?settingsType=2&tab=dates&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="tempMin">Başlangıç Tarihi:</label></td>
-          <td><input class="input" id="incStartTime" name="incStartTime" type="date" value="%INCSTARTTIME%"></td>
+          <td><input class="input" id="incStartTime" name="incStartTime" type="date" value="{{prm_dates['starting_date']}}"></td>
         </tr>
         <tr>
           <td><label for="tempMin">Çıkım Modu Tarihi:</label></td>
           <td><input class="input" id="incHatchingModeTime" name="incHatchingModeTime" type="date"
-              value="%INCHATCHINGMODETIME%" disabled></td>
+              value="{{prm_dates['hatching_mode_date']}}" disabled></td>
         </tr>
         <tr>
           <td><label for="tempMin">Yaklaşık Çıkım Tarihi:</label></td>
-          <td><input class="input" id="incEndTime" name="incEndTime" type="date" value="%INCENDTIME%" disabled></td>
+          <td><input class="input" id="incEndTime" name="incEndTime" type="date" value="{{prm_dates['hatching_date']}}" disabled></td>
         </tr>
       </table>
       <br>
@@ -147,7 +147,7 @@
   <div id="eggTypes" class="tabBody settings" style="display: none;">
     <h3>YUMURTA TİPİ SEÇİMİ</h3>
     <br>
-    <form action="/save_settings?settingsType=3&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form action="/save_settings?settingsType=3&tab=eggTypes&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="chicken">Tavuk:</label></td>
@@ -207,7 +207,7 @@
   <div id="calibration" class="tabBody settings" style="display: none;">
     <h3>KALİBRASYON</h3>
     <br>
-    <form action="/save_settings?settingsType=4&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form action="/save_settings?settingsType=4&tab=calibration&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="tMin">Düşük Kalibrasyon Derecesi:</label></td>
@@ -268,7 +268,7 @@
       <hr>
     </form>
     
-    <form action="/save_settings?settingsType=5&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post" id="turnMotor">
+    <form action="/save_settings?settingsType=5&tab=calibration&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post" id="turnMotor">
       <label for="motorForceTurnTime">Motoru Süreli Döndür(ms): </label>
       <input class="input" id="motorForceTurnTime" name="motorTurnTime" type="number" step="10" value="{{prm_model['motor_turn_ms']}}"
         min="100" max="500000">
@@ -281,6 +281,8 @@
 <script>
   var path = window.location.pathname.split('/');
   var nodeId = path[path.length - 1]
+  var tab ='{{prm_tab}}';
+  document.getElementById('{{prm_model["egg_type"]}}').checked = true;
   setInterval(function () {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -328,15 +330,20 @@
     document.getElementById("eggTypes").style.display = "none";
     document.getElementById("settings").style.display = "none";
     document.getElementById("calibration").style.display = "none";
-    if (event.target.id === "settingsTab")
+    if ( tab !== 'None'){
+      document.getElementById("{{prm_tab}}").style.display = "flex";
+      tab = 'None';
+    }
+    else if (event.target.id === "settingsTab")
       document.getElementById("settings").style.display = "flex";
-    if (event.target.id === "datesTab")
+    else if (event.target.id === "datesTab")
       document.getElementById("dates").style.display = "flex";
-    if (event.target.id === "eggTypesTab")
+    else if (event.target.id === "eggTypesTab")
       document.getElementById("eggTypes").style.display = "flex";
-    if (event.target.id === "calibrationTab")
+    else if (event.target.id === "calibrationTab")
       document.getElementById("calibration").style.display = "flex";
   }
+  tabToggle({'target':{'id':'settingsTab'}})
 
 </script>
 

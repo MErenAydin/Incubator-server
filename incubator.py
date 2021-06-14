@@ -90,7 +90,12 @@ def main_view(userId = 0, nodeId = 0):
             WHERE u.user_id = {} and n.node_id = {}""".format(userId, nodeId)
             cursor.execute(sql)
             model = cursor.fetchone()
-            return render_template("index.html", prm_model = model)
+            dates = {}
+            dates['hatching_mode_date'] = (model['starting_date'] + datetime.timedelta(days=18)).strftime("%Y-%m-%d")
+            dates['hatching_date'] = (model['starting_date'] + datetime.timedelta(days=21)).strftime("%Y-%m-%d")
+            dates['starting_date'] = (model['starting_date']).strftime("%Y-%m-%d")
+            tab = request.args.get("tab")
+            return render_template("index.html", prm_model = model, prm_dates = dates, prm_tab = tab)
         else :
             return "You Have No Node"
     except Exception as e:
@@ -196,10 +201,11 @@ def save_settings():
     settings_type = request.args.get("settingsType")
     node_id = request.args.get("nodeId")
     user_id = request.args.get("userId")
+    tab = request.args.get("tab")
     settings_dict = request.form.to_dict()
     settings_dict["settings_type"] = settings_type
     redis_client.mset({"Node-{}-settings".format(node_id): json.dumps(settings_dict).encode('utf-8')})
-    return redirect(url_for('main_view', userId = user_id, nodeId = node_id))
+    return redirect(url_for('main_view', userId = user_id, nodeId = node_id) + "?tab={}".format(tab))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)
