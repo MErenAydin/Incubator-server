@@ -13,7 +13,16 @@
 <body>
   <!-- HEADER -->
   <div class="header">
-    <h2>INCUBATOR</h2>
+    <h2>{{prm_model['node_name'].upper()}}</h2>
+    <form action="/logout" method="POST">
+      <div class="user">
+        <div>
+          Kullanıcı: {{prm_model['username']}}
+        </div>
+        <button class="button" type="submit" onclick="return confirm('Çıkış yapmak istediğinizden emin misiniz?');">
+          <i class="fas fa-sign-out-alt"></i> ÇIKIŞ YAP</button>
+      </div>
+    </form>
   </div>
   <br>
   <!-- SICAKLIK NEM OLCUMLERI -->
@@ -47,59 +56,59 @@
   <div id="settings" class="tabBody settings">
     <h3>AYARLAR</h3>
     <br>
-    <form action="/save_settings?settingsType=1&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
+    <form action="/save_settings?settingsType=1&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="tempMin">Asgari Sıcaklık:</label></td>
           <td>
-            <input class="input" id="tempMin" name="tempMin" type="number" step="0.1" value="%TEMPMIN%" min="25"
+            <input class="input" id="tempMin" name="tempMin" type="number" step="0.1" value="{{prm_model['min_temp']}}" min="25"
               max="50">
           </td>
         </tr>
         <tr>
           <td><label for="tempMax">Azami Sıcaklık:</label></td>
           <td>
-            <input class="input" id="tempMax" name="tempMax" type="number" step="0.1" value="%TEMPMAX%" min="25"
+            <input class="input" id="tempMax" name="tempMax" type="number" step="0.1" value="{{prm_model['max_temp']}}" min="25"
               max="50">
           </td>
         </tr>
         <tr>
           <td><label for="humMin">Asgari Nem:</label></td>
           <td>
-            <input class="input" id="humMin" name="humMin" type="number" step="0.1" value="%HUMMIN%" min="40" max="80">
+            <input class="input" id="humMin" name="humMin" type="number" step="0.1" value="{{prm_model['min_hum']}}" min="40" max="80">
           </td>
         </tr>
         <tr>
           <td><label for="humMax">Azami Nem:</label></td>
           <td>
-            <input class="input" id="humMax" name="humMax" type="number" step="0.1" value="%HUMMAX%" min="40" max="80">
+            <input class="input" id="humMax" name="humMax" type="number" step="0.1" value="{{prm_model['max_hum']}}" min="40" max="80">
           </td>
         </tr>
         <tr>
           <td><label for="tempOffset">Sıcaklık Ofseti:</label></td>
           <td>
-            <input class="input" id="tempOffset" name="tempOffset" type="number" step="0.1" value="%TEMPOFFSET%"
+            <input class="input" id="tempOffset" name="tempOffset" type="number" step="0.1" value="{{prm_model['temp_offset']}}"
               min="-20" max="20">
           </td>
         </tr>
         <tr>
           <td><label for="humOffset">Nem Ofseti:</label></td>
           <td>
-            <input class="input" id="humOffset" name="humOffset" type="number" step="0.1" value="%HUMOFFSET%" min="-20"
+            <input class="input" id="humOffset" name="humOffset" type="number" step="0.1" value="{{prm_model['hum_offset']}}" min="-20"
               max="20">
           </td>
         </tr>
         <tr>
           <td><label for="motorInterval">Motor Dönme Aralığı (dk):</label></td>
           <td>
-            <input class="input" id="motorInterval" name="motorInterval" type="number" step="1" value="%MOTORINTERVAL%"
+            <input class="input" id="motorInterval" name="motorInterval" type="number" step="1" value="{{prm_model['motor_interval']}}"
               min="10" max="200000">
           </td>
         </tr>
         <tr>
           <td><label for="motorTurnTime">Motor Dönüş Süresi (ms):</label></td>
           <td>
-            <input class="input" id="motorTurnTime" name="motorTurnTime" type="number" step="10" value="%MOTORTURNTIME%"
+            <input class="input" id="motorTurnTime" name="motorTurnTime" type="number" step="10" value="{{prm_model['motor_turn_ms']}}"
               min="100" max="500000">
           </td>
         </tr>
@@ -113,7 +122,7 @@
   <div id="dates" class="tabBody dates" style="display: none;">
     <h3>TARİHLER</h3>
     <br>
-    <form action="/save_settings?settingsType=2&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
+    <form action="/save_settings?settingsType=2&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="tempMin">Başlangıç Tarihi:</label></td>
@@ -138,7 +147,7 @@
   <div id="eggTypes" class="tabBody settings" style="display: none;">
     <h3>YUMURTA TİPİ SEÇİMİ</h3>
     <br>
-    <form action="/save_settings?settingsType=3&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
+    <form action="/save_settings?settingsType=3&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="chicken">Tavuk:</label></td>
@@ -198,57 +207,57 @@
   <div id="calibration" class="tabBody settings" style="display: none;">
     <h3>KALİBRASYON</h3>
     <br>
-    <form action="/save_settings?settingsType=4&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post">
+    <form action="/save_settings?settingsType=4&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
       <table>
         <tr>
           <td><label for="tMin">Düşük Kalibrasyon Derecesi:</label></td>
           <td>
-            <input class="input" id="tMin" name="tMin" type="number" step="0.1" value="%TMIN%" min="-40" max="50">
+            <input class="input" id="tMin" name="tMin" type="number" step="0.1" value="{{prm_model['low_calibration_temp']}}" min="-40" max="50">
           </td>
         </tr>
         <tr>
           <td><label for="tMax">Yüksek Kalibrasyon Derecesi:</label></td>
           <td>
-            <input class="input" id="tMax" name="tMax" type="number" step="0.1" value="%TMAX%" min="-40" max="50">
+            <input class="input" id="tMax" name="tMax" type="number" step="0.1" value="{{prm_model['high_calibration_temp']}}" min="-40" max="50">
           </td>
         </tr>
         <tr>
           <td><label for="tMinMeasured">Düşük Ölçülen Derece:</label></td>
           <td>
-            <input class="input" id="tMinMeasured" name="tMinMeasured" type="number" step="0.1" value="%TMINMEASURED%"
+            <input class="input" id="tMinMeasured" name="tMinMeasured" type="number" step="0.1" value="{{prm_model['low_measured_temp']}}"
               min="-40" max="50">
           </td>
         </tr>
         <tr>
           <td><label for="tMaxMeasured">Yüksek Ölçülen Derece:</label></td>
           <td>
-            <input class="input" id="tMaxMeasured" name="tMaxMeasured" type="number" step="0.1" value="%TMAXMEASURED%"
+            <input class="input" id="tMaxMeasured" name="tMaxMeasured" type="number" step="0.1" value="{{prm_model['high_measured_temp']}}"
               min="-40" max="50">
           </td>
         </tr>
         <tr>
           <td><label for="hMin">Düşük Kalibrasyon Nem:</label></td>
           <td>
-            <input class="input" id="hMin" name="hMin" type="number" step="0.1" value="%HMIN%" min="0" max="90">
+            <input class="input" id="hMin" name="hMin" type="number" step="0.1" value="{{prm_model['low_calibration_hum']}}" min="0" max="90">
           </td>
         </tr>
         <tr>
           <td><label for="hMax">Yüksek Kalibrasyon Nem:</label></td>
           <td>
-            <input class="input" id="hMax" name="hMax" type="number" step="0.1" value="%HMAX%" min="0" max="90">
+            <input class="input" id="hMax" name="hMax" type="number" step="0.1" value="{{prm_model['high_calibration_hum']}}" min="0" max="90">
           </td>
         </tr>
         <tr>
           <td><label for="hMinMeasured">Düşük Ölçülen Nem:</label></td>
           <td>
-            <input class="input" id="hMinMeasured" name="hMinMeasured" type="number" step="0.1" value="%HMINMEASURED%"
+            <input class="input" id="hMinMeasured" name="hMinMeasured" type="number" step="0.1" value="{{prm_model['low_measured_hum']}}"
               min="0" max="90">
           </td>
         </tr>
         <tr>
           <td><label for="hMaxMeasured">Yüksek Ölçülen Nem:</label></td>
           <td>
-            <input class="input" id="hMaxMeasured" name="hMaxMeasured" type="number" step="0.1" value="%HMAXMEASURED%"
+            <input class="input" id="hMaxMeasured" name="hMaxMeasured" type="number" step="0.1" value="{{prm_model['high_measured_hum']}}"
               min="0" max="90">
           </td>
         </tr>
@@ -261,7 +270,7 @@
     
     <form action="/save_settings?settingsType=5&nodeId={{prm_nodeId}}&userId={{prm_userId}}" method="post" id="turnMotor">
       <label for="motorForceTurnTime">Motoru Süreli Döndür(ms): </label>
-      <input class="input" id="motorForceTurnTime" name="motorTurnTime" type="number" step="10" value="%MOTORTURNTIME%"
+      <input class="input" id="motorForceTurnTime" name="motorTurnTime" type="number" step="10" value="{{prm_model['motor_turn_ms']}}"
         min="100" max="500000">
       <button style="font-size: 0.85em;" class="button" type="submit" form="turnMotor"><i class="fas fa-redo"></i>
         DÖNDÜR</button>

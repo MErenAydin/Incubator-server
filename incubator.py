@@ -49,12 +49,12 @@ def signin():
         try:
             # Do username pdw control
 
-            sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
+            sql = "SELECT * FROM users where username like '{}'".format(request.form['userName'])
             cursor.execute(sql)
             user = cursor.fetchone()
             if user is None or len(user) <= 0:
                 salt = bytearray(secrets.token_bytes(64))
-                sql = """INSERT INTO users (username, registertime, email, name, surname, pwditeration, pwdhash, pwdsalt)
+                sql = """INSERT INTO users (username, register_time, email, first_name, last_name, pwd_iteration, pwd_hash, pwd_salt)
                 VALUES ('{}', current_timestamp, '{}', '{}', '{}', {}, E'\\\\x{}'::bytea, E'\\\\x{}'::bytea)
                 """.format(
                     request.form['userName'],
@@ -78,10 +78,19 @@ def signin():
 
 @app.route('/index/<int:userId>/<int:nodeId>')
 def main_view(userId = 0, nodeId = 0):
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
         if session['userId'] == int(userId) and int(nodeId) in nodes:
-            return render_template("index.html" , prm_nodeId = nodeId, prm_userId = userId)
+            sql= """
+            SELECT u.*, n.* , s.* FROM users u
+            INNER JOIN usernode un ON u.user_id = un.user_id
+            INNER JOIN nodes n ON n.node_id = un.node_id
+            INNER JOIN settings s ON s.settings_id = n.settings_id
+            WHERE u.user_id = {} and n.node_id = {}""".format(userId, nodeId)
+            cursor.execute(sql)
+            model = cursor.fetchone()
+            return render_template("index.html", prm_model = model)
         else :
             return "You Have No Node"
     except Exception as e:
@@ -94,33 +103,33 @@ def login():
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
             # Do username pdw control
-            sql = "SELECT * FROM users where userName like '{}'".format(request.form['userName'])
+            sql = "SELECT * FROM users where username like '{}'".format(request.form['userName'])
             cursor.execute(sql)
             user = cursor.fetchone()
             if len(user) > 0:
-                in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user['pwdsalt'].tobytes(), user['pwditeration'], dklen = 64)
-                db_hash = user['pwdhash'].tobytes()
+                in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user['pwd_salt'].tobytes(), user['pwd_iteration'], dklen = 64)
+                db_hash = user['pwd_hash'].tobytes()
                 
                 if compare_digest(in_hash, db_hash):
                     # Save the form data to the session object
                     session['userName'] = str(request.form['userName'])
-                    session['userId'] = user['userid']
+                    session['userId'] = user['user_id']
                     sql= """
                     SELECT n.nodeid FROM users u
-                    INNER JOIN usernode un ON u.userid = un.userid
-                    INNER JOIN nodes n ON n.nodeid = un.nodeid
-                    WHERE u.userid = {}""".format(user['userid'])
+                    INNER JOIN usernode un ON u.user_id = un.user_id
+                    INNER JOIN nodes n ON n.node_id = un.node_id
+                    WHERE u.user_id = {}""".format(user['user_id'])
                     cursor.execute(sql)
                     nodes = cursor.fetchall()
                     user_nodes = []
                     for node in nodes:
-                        user_nodes.append(node['nodeid'])
+                        user_nodes.append(node['node_id'])
                     if len(user_nodes) > 0:
                         session['nodes'] = struct.pack("{}Q".format(len(user_nodes)), *user_nodes)
                     else:
                         session['nodes'] = bytes(8)
                     # TODO: redirect node selection page
-                    return redirect(url_for('main_view', userId = user['userid'], nodeId = nodes[0]))
+                    return redirect(url_for('main_view', userId = user['user_id'], nodeId = nodes[0]))
                 else :
                     return redirect(url_for('login'))
             cursor.close()
@@ -137,6 +146,12 @@ def login():
         print(e)
 
     return render_template("login.html")
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    for key in list(session.keys()):
+     session.pop(key)
+    return redirect(url_for("login"))
 
 @app.route('/temperature/<int:nodeId>', methods=['GET'])
 def temperature(nodeId = 0):
