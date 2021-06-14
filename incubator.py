@@ -115,7 +115,7 @@ def login():
                     session['userName'] = str(request.form['userName'])
                     session['userId'] = user['user_id']
                     sql= """
-                    SELECT n.nodeid FROM users u
+                    SELECT n.node_id FROM users u
                     INNER JOIN usernode un ON u.user_id = un.user_id
                     INNER JOIN nodes n ON n.node_id = un.node_id
                     WHERE u.user_id = {}""".format(user['user_id'])
