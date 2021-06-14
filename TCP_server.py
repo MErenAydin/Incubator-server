@@ -98,16 +98,16 @@ class connection_handler(Thread):
                 self.node_key = self.connection.recv(64).decode('utf-8')
                 print("Node Key: {}".format(self.node_key))
                 sql = """
-                SELECT u.userid, n.nodeid, n.name FROM users u
-                INNER JOIN usernode un ON u.userid = un.userid
-                INNER JOIN nodes n ON n.nodeid = un.nodeid
-                WHERE n.nodekey = '{}'
+                SELECT u.user_id, n.node_id, n.node_name FROM users u
+                INNER JOIN usernode un ON u.user_id = un.user_id
+                INNER JOIN nodes n ON n.node_id = un.node_id
+                WHERE n.node_key = '{}'
                 """.format(self.node_key)
                 cursor.execute(sql)
                 users = cursor.fetchall()
                 if users is not None and len(users) > 0:
-                    self.node_id = users[0]['nodeid']
-                    self.node_name = users[0]['name']
+                    self.node_id = users[0]['node_id']
+                    self.node_name = users[0]['node_name']
             else:
                 self.safe_start = False
                 self.db_conn.close()
