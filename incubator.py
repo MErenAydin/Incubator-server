@@ -201,7 +201,7 @@ def save_settings():
     node_id = request.args.get("nodeId")
     user_id = request.args.get("userId")
     settings_dict = request.form.to_dict()
-    packed_settings = struct.pack("14f2LQQ", 
+    packed_settings = struct.pack("14f2LQB7x", 
                 float(settings_dict['tempMin']),
                 float(settings_dict['tempMax']),
                 float(settings_dict['humMin']),
