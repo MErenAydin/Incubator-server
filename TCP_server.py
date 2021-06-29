@@ -39,7 +39,7 @@ class connection_handler(Thread):
     def __init__(self, connection, condition):
         Thread.__init__(self, args=(condition,))
         self.connection = connection
-        self.timeout = 60
+        self.timeout = 5
         self.node_key = ""
         self.safe_start = True
         self.db_conn = psycopg2.connect(database="incubator", user='postgres', password='"|sJ7\\Be\\#f^#O1iy\'Po', host='127.0.0.1', port= '5432')
@@ -66,8 +66,8 @@ class connection_handler(Thread):
                     else:
                         self.safe_start = False
                 else:
-                    #Timeout reached: Do stuff in here
-                    pass
+                    #Timeout reached: Do stuff in here (send email etc.)
+                    break
                 
                 if self.redis.exists(redis_key) > 0:
                     settings = self.redis.get(redis_key)
