@@ -198,63 +198,62 @@ def humidity(nodeId = 0):
 
 @app.route('/save_settings', methods=['POST'])
 def save_settings():
-    settings_type = request.args.get("settingsType")
     node_id = request.args.get("nodeId")
     user_id = request.args.get("userId")
-    tab = request.args.get("tab")
     settings_dict = request.form.to_dict()
-    settings_dict["settings_type"] = settings_type
-    redis_client.mset({"Node-{}-settings".format(node_id): json.dumps(settings_dict).encode('utf-8')})
+    packed_settings = struct.pack("14f2LQB", 
+                float(settings_dict['tempMin']),
+                float(settings_dict['tempMax']),
+                float(settings_dict['humMin']),
+                float(settings_dict['humMax']),
+                float(settings_dict['tempOffset']),
+                float(settings_dict['humOffset']),
+                float(settings_dict['tMin']),
+                float(settings_dict['tMax']),
+                float(settings_dict['hMin']),
+                float(settings_dict['hMax']),
+                float(settings_dict['tMinMeasured']),
+                float(settings_dict['tMaxMeasured']),
+                float(settings_dict['hMinMeasured']),
+                float(settings_dict['hMaxMeasured']),
+                int(settings_dict['motorInterval']),
+                int(settings_dict['motorTurnTime']),
+                int((datetime.datetime.strptime(settings_dict['incStartTime'], "%Y-%m-%d") - datetime.datetime(1970, 1, 1)).total_seconds()),
+                int(settings_dict['eggTypesRadio']))
+
+    redis_client.mset({"Node-{}-settings".format(node_id): packed_settings})
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
         # Do username pdw control
         sql = "SELECT settings_id FROM nodes where node_id={}".format(node_id)
         cursor.execute(sql)
         node = cursor.fetchone()
-        if settings_type == '1':
-            sql = """
-                UPDATE settings SET
-                min_temp={}, max_temp={}, min_hum={}, max_hum={},
-                temp_offset={}, hum_offset={},motor_interval={}, motor_turn_ms={}
-                where settings_id={}""".format(
-                    settings_dict['tempMin'],
-                    settings_dict['tempMax'],
-                    settings_dict['humMin'],
-                    settings_dict['humMax'],
-                    settings_dict['tempOffset'],
-                    settings_dict['humOffset'],
-                    settings_dict['motorInterval'],
-                    settings_dict['motorTurnTime'],
-                    node['settings_id'])
-        elif settings_type == '2':
-            sql = """
-                UPDATE settings SET
-                starting_date= TO_DATE('{}', 'YYYY-MM-DD')
-                where settings_id={}""".format(
-                    settings_dict['incStartTime'],
-                    node['settings_id'])
-        elif settings_type == '3':
-            sql = """
-                UPDATE settings SET
-                egg_type= '{}'
-                where settings_id={}""".format(
-                    settings_dict['eggTypesRadio'],
-                    node['settings_id'])
-        elif settings_type == '4':
-            sql = """
-                UPDATE settings SET
-                low_calibration_temp={}, high_calibration_temp={}, low_calibration_hum={}, high_calibration_hum={},
-                low_measured_temp={}, high_measured_temp={}, low_measured_hum={}, high_measured_hum={}
-                where settings_id={}""".format(
-                    settings_dict['tMin'],
-                    settings_dict['tMax'],
-                    settings_dict['hMin'],
-                    settings_dict['hMax'],
-                    settings_dict['tMinMeasured'],
-                    settings_dict['tMaxMeasured'],
-                    settings_dict['hMinMeasured'],
-                    settings_dict['hMaxMeasured'],
-                    node['settings_id'])
+        sql = """
+            UPDATE settings SET
+            min_temp={}, max_temp={}, min_hum={}, max_hum={},
+            temp_offset={}, hum_offset={},motor_interval={}, motor_turn_ms={},starting_date= TO_DATE('{}', 'YYYY-MM-DD'),
+            egg_type= '{}', low_calibration_temp={}, high_calibration_temp={}, low_calibration_hum={}, high_calibration_hum={},
+            low_measured_temp={}, high_measured_temp={}, low_measured_hum={}, high_measured_hum={}
+            where settings_id={}""".format(
+                settings_dict['tempMin'],
+                settings_dict['tempMax'],
+                settings_dict['humMin'],
+                settings_dict['humMax'],
+                settings_dict['tempOffset'],
+                settings_dict['humOffset'],
+                settings_dict['motorInterval'],
+                settings_dict['motorTurnTime'],
+                settings_dict['incStartTime'],
+                settings_dict['eggTypesRadio'],
+                settings_dict['tMin'],
+                settings_dict['tMax'],
+                settings_dict['hMin'],
+                settings_dict['hMax'],
+                settings_dict['tMinMeasured'],
+                settings_dict['tMaxMeasured'],
+                settings_dict['hMinMeasured'],
+                settings_dict['hMaxMeasured'],
+                node['settings_id'])
         cursor.execute(sql)
         conn.commit()
         cursor.close()
@@ -262,7 +261,8 @@ def save_settings():
         cursor.close()
         conn.rollback()
         print(str(e))
-    return redirect(url_for('main_view', userId = user_id, nodeId = node_id) + "?tab={}".format(tab))
+
+    return redirect(url_for('main_view', userId = user_id, nodeId = node_id))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

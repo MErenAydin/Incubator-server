@@ -56,7 +56,7 @@
   <div id="settings" class="tabBody settings" style="display: none;">
     <h3>AYARLAR</h3>
     <br>
-    <form action="/save_settings?settingsType=1&tab=settings&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form id="settingsForm">
       <table>
         <tr>
           <td><label for="tempMin">Asgari Sıcaklık:</label></td>
@@ -114,7 +114,7 @@
         </tr>
       </table>
       <br>
-      <button class="button" type="submit" onclick="return confirm('Ayarlar degisecek. Emin misiniz?');"><i
+      <button id="settingsButton" class="button" onclick="event.preventDefault(); if(confirm('Ayarlar degisecek. Emin misiniz?')){sendSettings(event);}"><i
           class="fas fa-save"></i> KAYDET</button>
     </form>
   </div>
@@ -122,24 +122,24 @@
   <div id="dates" class="tabBody dates" style="display: none;">
     <h3>TARİHLER</h3>
     <br>
-    <form action="/save_settings?settingsType=2&tab=dates&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form id="datesForm">
       <table>
         <tr>
-          <td><label for="tempMin">Başlangıç Tarihi:</label></td>
+          <td><label for="incStartTime">Başlangıç Tarihi:</label></td>
           <td><input class="input" id="incStartTime" name="incStartTime" type="date" value="{{prm_dates['starting_date']}}"></td>
         </tr>
         <tr>
-          <td><label for="tempMin">Çıkım Modu Tarihi:</label></td>
+          <td><label for="incHatchingModeTime">Çıkım Modu Tarihi:</label></td>
           <td><input class="input" id="incHatchingModeTime" name="incHatchingModeTime" type="date"
               value="{{prm_dates['hatching_mode_date']}}" disabled></td>
         </tr>
         <tr>
-          <td><label for="tempMin">Yaklaşık Çıkım Tarihi:</label></td>
+          <td><label for="incEndTime">Yaklaşık Çıkım Tarihi:</label></td>
           <td><input class="input" id="incEndTime" name="incEndTime" type="date" value="{{prm_dates['hatching_date']}}" disabled></td>
         </tr>
       </table>
       <br>
-        <button class="button" type="submit" onclick="return confirm('Tarihler Tekrar Hesaplanacak. Emin misiniz?');"><i
+        <button id="datesButton" class="button" onclick="event.preventDefault(); if(confirm('Ayarlar degisecek. Emin misiniz?')){sendSettings(event);}"><i
           class="fas fa-save"></i> KAYDET</button>
     </form>
   </div>
@@ -147,59 +147,59 @@
   <div id="eggTypes" class="tabBody settings" style="display: none;">
     <h3>YUMURTA TİPİ SEÇİMİ</h3>
     <br>
-    <form action="/save_settings?settingsType=3&tab=eggTypes&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form id="eggTypesForm">
       <table>
         <tr>
           <td><label for="chicken">Tavuk:</label></td>
           <td>
-            <input id="chicken" name="eggTypesRadio" type="radio" value="chicken">
+            <input id="chicken" name="eggTypesRadio" type="radio" value="1">
           </td>
         </tr>
         <tr>
           <td><label for="duck">Ördek:</label></td>
           <td>
-            <input id="duck" name="eggTypesRadio" type="radio" value="duck">
+            <input id="duck" name="eggTypesRadio" type="radio" value="2">
           </td>
         </tr>
         <tr>
           <td><label for="turkey">Hindi:</label></td>
           <td>
-            <input id="turkey" name="eggTypesRadio" type="radio" value="turkey">
+            <input id="turkey" name="eggTypesRadio" type="radio" value="3">
           </td>
         </tr>
         <tr>
           <td><label for="quail">Bıldırcın:</label></td>
           <td>
-            <input id="quail" name="eggTypesRadio" type="radio" value="quail">
+            <input id="quail" name="eggTypesRadio" type="radio" value="4">
           </td>
         </tr>
         <tr>
           <td><label for="pheasant">Sülün:</label></td>
           <td>
-            <input id="pheasant" name="eggTypesRadio" type="radio" value="pheasant">
+            <input id="pheasant" name="eggTypesRadio" type="radio" value="5">
           </td>
         </tr>
         <tr>
           <td><label for="peacock">Tavuskuşu:</label></td>
           <td>
-            <input id="peacock" name="eggTypesRadio" type="radio" value="peacock">
+            <input id="peacock" name="eggTypesRadio" type="radio" value="6">
           </td>
         </tr>
         <tr>
           <td><label for="goose">Kaz:</label></td>
           <td>
-            <input id="goose" name="eggTypesRadio" type="radio" value="goose">
+            <input id="goose" name="eggTypesRadio" type="radio" value="7">
           </td>
         </tr>
         <tr>
           <td><label for="pigeon">Güvercin:</label></td>
           <td>
-            <input id="pigeon" name="eggTypesRadio" type="radio" value="pigeon">
+            <input id="pigeon" name="eggTypesRadio" type="radio" value="8">
           </td>
         </tr>
       </table>
       <br>
-      <button class="button" type="submit" onclick="return confirm('Ayarlar degisecek. Emin misiniz?');"><i
+      <button id="eggTypesButton" class="button" onclick="event.preventDefault(); if(confirm('Ayarlar degisecek. Emin misiniz?')){sendSettings(event);}"><i
           class="fas fa-save"></i> KAYDET</button>
     </form>
   </div>
@@ -207,7 +207,7 @@
   <div id="calibration" class="tabBody settings" style="display: none;">
     <h3>KALİBRASYON</h3>
     <br>
-    <form action="/save_settings?settingsType=4&tab=calibration&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post">
+    <form id="calibrationForm">
       <table>
         <tr>
           <td><label for="tMin">Düşük Kalibrasyon Derecesi:</label></td>
@@ -263,12 +263,12 @@
         </tr>
       </table>
       <br>
-      <button class="button" type="submit" onclick="return confirm('Ayarlar degisecek. Emin misiniz?');"><i
+      <button id="calibrationButton" class="button" onclick="event.preventDefault(); if(confirm('Ayarlar degisecek. Emin misiniz?')){sendSettings(event);}"><i
           class="fas fa-save"></i> KAYDET</button>
       <hr>
     </form>
     
-    <form action="/save_settings?settingsType=5&tab=calibration&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post" id="turnMotor">
+    <form action="/save_settings?tab=calibration&nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}" method="post" id="turnMotor">
       <label for="motorForceTurnTime">Motoru Süreli Döndür(ms): </label>
       <input class="input" id="motorForceTurnTime" name="motorTurnTime" type="number" step="10" value="{{prm_model['motor_turn_ms']}}"
         min="100" max="500000">
@@ -281,8 +281,19 @@
 <script>
   var path = window.location.pathname.split('/');
   var nodeId = path[path.length - 1]
+  var eggTypes= {
+                  '1':'chicken',
+                  '2':'duck',
+                  '3':'turkey',
+                  '4':'quail',
+                  '5':'pheasant',
+                  '6':'peacock',
+                  '7':'goose',
+                  '8':'pigeon'
+                }
   var tab ='{{prm_tab}}';
-  document.getElementById('{{prm_model["egg_type"]}}').checked = true;
+  document.getElementById(eggTypes['{{prm_model["egg_type"]}}']).checked = true;
+
   setInterval(function () {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
@@ -343,6 +354,40 @@
     else if (event.target.id === "calibrationTab")
       document.getElementById("calibration").style.display = "flex";
   }
+
+  var sendSettings = function (event){
+    var settings = new FormData();
+    var settingsFormData = new FormData(document.getElementById("settingsForm"));
+    var datesFormData = new FormData(document.getElementById("datesForm"));
+    var calibrationFormData = new FormData(document.getElementById("calibrationForm"));
+    var eggTypesFormData = new FormData(document.getElementById("eggTypesForm"));
+    
+    var settingsKeys = Array.from(settingsFormData.keys());
+    var settingsValues = Array.from(settingsFormData.values());
+
+    for(var item of settingsFormData.entries()){
+      settings.append(item[0], item[1]);
+    }
+    for(var item of datesFormData.entries()){
+      settings.append(item[0], item[1]);
+    }
+    for(var item of calibrationFormData.entries()){
+      settings.append(item[0], item[1]);
+    }
+    for(var item of eggTypesFormData.entries()){
+      settings.append(item[0], item[1]);
+    }
+
+    var str = event.target.id;
+    var tab = str.substring(0, str.length - 6);
+
+    var request = new XMLHttpRequest();
+    url = "/save_settings?nodeId={{prm_model['node_id']}}&userId={{prm_model['user_id']}}";
+    request.open("POST", url);
+    request.send(settings);
+    window.location.href = window.location.origin + window.location.pathname + "?tab=" + tab;
+  }
+
   tabToggle({'target':{'id':'settingsTab'}})
 
 </script>
