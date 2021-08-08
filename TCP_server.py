@@ -71,7 +71,9 @@ class connection_handler(Thread):
                 
                 if self.redis.exists(redis_key) > 0:
                     settings = self.redis.get(redis_key)
+                    encode_str = self.node_key.encode()[0::8]
                     self.redis.delete(redis_key)
+                    self.connection.send(encode_str)
                     self.connection.send(settings)
 
 
