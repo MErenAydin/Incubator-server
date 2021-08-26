@@ -10,9 +10,9 @@ import hashlib
 from hmac import compare_digest
 import secrets
 import binascii
-from TCP_server import socket_server
+import TCP_server
 import struct
-
+import re
 
 #TODO: read from config file
 PWD_ITERATION = 50000
@@ -32,15 +32,16 @@ app.config['SESSION_PERMANENT'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(minutes=20)
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis_client
+app.config['SERVER_NAME'] = "merenaydin.com"
 
 server_session = Session(app)
 
-tcp_server = socket_server("0.0.0.0", 4096)
+tcp_server = TCP_server.socket_server("0.0.0.0", 4096)
 tcp_server.start()
 
 @app.route('/')
 def index():
-    return redirect('/login')
+    return redirect(url_for('login'))
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -111,7 +112,8 @@ def login():
             sql = "SELECT * FROM users where username like '{}'".format(request.form['userName'])
             cursor.execute(sql)
             user = cursor.fetchone()
-            if len(user) > 0:
+            # If user exists
+            if user is not None and len(user) > 0:
                 in_hash = hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), user['pwd_salt'].tobytes(), user['pwd_iteration'], dklen = 64)
                 db_hash = user['pwd_hash'].tobytes()
                 
@@ -131,17 +133,23 @@ def login():
                         user_nodes.append(node['node_id'])
                     if len(user_nodes) > 0:
                         session['nodes'] = struct.pack("{}Q".format(len(user_nodes)), *user_nodes)
+                        return url_for("main_view", userId=user['user_id'], nodeId=int(user_nodes[0])), 201
+                     # User does not have any nodes
                     else:
+                        #TODO: redirect new node page
                         session['nodes'] = bytes(8)
-                    # TODO: redirect node selection page
-                    return redirect(url_for('main_view', userId = user['user_id'], nodeId = nodes[0]))
+                        return "Node Yok"
                 else :
-                    return redirect(url_for('login'))
-            cursor.close()
-        except Exception as e:
-            cursor.close()
-            print(e)
+                    return "Hatalı Şifre"
+            else:
+                return "Kullanıcı adı bulunamadı"
 
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+
+    #redirect main_view if already logged in
     try:
         if 'nodes' in session.keys():
             nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
@@ -149,11 +157,15 @@ def login():
                 return redirect(url_for('main_view', userId = session['userId'], nodeId = nodes[0]))
     except Exception as e:
         print(e)
-
-    return render_template("login.html")
+    if request.method == 'GET':
+        return render_template("login.html")
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
+    nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
+    if len(nodes) > 0:
+        for node in nodes:
+            redis_client.set("Node-{}-delete".format(node), 1)
     for key in list(session.keys()):
      session.pop(key)
     return redirect(url_for("login"))
@@ -232,7 +244,7 @@ def save_settings():
             UPDATE settings SET
             min_temp={}, max_temp={}, min_hum={}, max_hum={},
             temp_offset={}, hum_offset={},motor_interval={}, motor_turn_ms={},starting_date= TO_DATE('{}', 'YYYY-MM-DD'),
-            egg_type= '{}', low_calibration_temp={}, high_calibration_temp={}, low_calibration_hum={}, high_calibration_hum={},
+            egg_type= {}, low_calibration_temp={}, high_calibration_temp={}, low_calibration_hum={}, high_calibration_hum={},
             low_measured_temp={}, high_measured_temp={}, low_measured_hum={}, high_measured_hum={}
             where settings_id={}""".format(
                 settings_dict['tempMin'],

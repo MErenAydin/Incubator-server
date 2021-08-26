@@ -53,6 +53,7 @@ class connection_handler(Thread):
         self.setup()
         redis_node = "Node-{}".format(self.node_id)
         redis_key = "Node-{}-settings".format(self.node_id)
+        redis_del = "Node-{}-delete".format(self.node_id)
         try:
             while True:
                 if not self.safe_start:
@@ -75,22 +76,21 @@ class connection_handler(Thread):
                     self.redis.delete(redis_key)
                     self.connection.send(encode_str)
                     self.connection.send(settings)
-
+                
+                # logged out
+                if self.redis.exists(redis_del) > 0:
+                    break
 
         except Exception as e:
             print(e)
-            self.connection.close()
-            if self.redis.exists(redis_key) > 0:
-                self.redis.delete(redis_key)
-            if self.redis.exists(redis_node) > 0:
-                self.redis.delete(redis_node)
-            
         
         self.connection.close()
         if self.redis.exists(redis_key) > 0:
             self.redis.delete(redis_key)
         if self.redis.exists(redis_node) > 0:
             self.redis.delete(redis_node)
+        if self.redis.exists(redis_del) > 0:
+            self.redis.delete(redis_del)
 
     def setup(self):
         cursor = self.db_conn.cursor(cursor_factory=psycopg2.extras.DictCursor)

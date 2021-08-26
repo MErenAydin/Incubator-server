@@ -11,27 +11,27 @@
 </head>
 
 <body>
-
     <!-- LOG IN -->
     <div class="center full-screen">
         <div id="settings" class="container settings half-height half-width">
             <h3>LOG IN</h3>
             <br>
-            <form action="/login" method="post">
+            <form id="loginForm" action="/login" method="post">
                 <table>
                     <tr>
                         <td>
-                            <input class="input" id="userName" name="userName" type="text" placeholder="Kullanıcı Adı">
+                            <input class="input" id="userName" name="userName" type="text" placeholder="Kullanıcı Adı" required>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <input class="input" id="password" name="password" type="password" placeholder="Şifre">
+                            <input class="input" id="password" name="password" type="password" placeholder="Şifre" required>
                         </td>
                     </tr>
                 </table>
+                <label id="errorLabel" name="errorLabel" style="color:red;">{{error}}</label>
                 <br>
-                <button class="button" type="submit">
+                <button id="loginButton" class="button">
                     <i class="fas fa-sign-in-alt"></i> GİRİŞ YAP</button>
             </form>
             <br>
@@ -39,7 +39,39 @@
             <span>Üye değilseniz <a href="./signin">buraya</a> tıklayarak üye olabilirsiniz.</span>
         </div>
     </div>
-
 </body>
 
+<script>
+    window.addEventListener( "load", function () {
+        function sendData() {
+            const xhttp = new XMLHttpRequest();
+            const formData = new FormData( form );
+
+            xhttp.addEventListener( "load", function(event) {
+                console.log(event.target);
+                debugger;
+                if (event.target.status === 201){
+                    window.location.href = event.target.responseText;
+                }
+                else{
+                    document.getElementById("errorLabel").innerHTML = event.target.responseText;
+                }
+            } );
+            // xhttp.addEventListener( "error", function( event ) {
+            //     alert( 'Oops! Something went wrong.' );
+            // } );
+            xhttp.open("POST", "/login", true);
+            xhttp.send(formData);
+        }
+
+        const form = document.getElementById( "loginForm" );
+
+        form.addEventListener( "submit",
+            function ( event ) {
+                event.preventDefault();
+                sendData();
+            } );
+    } );
+
+</script>
 </html>
