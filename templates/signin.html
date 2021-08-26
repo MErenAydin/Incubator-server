@@ -17,7 +17,7 @@
         <div id="settings" class="container settings half-height half-width">
             <h3>YENİ ÜYELİK</h3>
             <br>
-            <form action="/signin" method="post">
+            <form id="signinForm" action="/signin" method="post">
                 <table>
                     <tr>
                         <td>
@@ -27,6 +27,11 @@
                     <tr>
                         <td>
                             <input class="input" id="password" name="password" type="password" placeholder="Şifre" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input class="input" id="password2" name="password2" type="password" placeholder="Şifre (Tekrar)" required>
                         </td>
                     </tr>
                     <tr>
@@ -44,6 +49,7 @@
                             <input class="input" id="surname" name="surname" type="text" placeholder="Soyad" maxlength="50">
                         </td>
                     </tr>
+                    <label id="errorLabel" name="errorLabel" style="color:red;">{{error}}</label>
 
                 </table>
                 <br>
@@ -55,5 +61,33 @@
     </div>
 
 </body>
+<script>
+    window.addEventListener( "load", function () {
+        function sendData() {
+            const xhttp = new XMLHttpRequest();
+            const formData = new FormData( form );
 
+            xhttp.addEventListener( "load", function(event) {
+                console.log(event.target);
+                debugger;
+                if (event.target.status === 201){
+                    window.location.href = event.target.responseText;
+                }
+                else{
+                    document.getElementById("errorLabel").innerHTML = event.target.responseText;
+                }
+            } );
+            xhttp.open("POST", "/signin", true);
+            xhttp.send(formData);
+        }
+
+        const form = document.getElementById( "signinForm" );
+
+        form.addEventListener( "submit",
+            function ( event ) {
+                event.preventDefault();
+                sendData();
+            } );
+    } );
+</script>
 </html>

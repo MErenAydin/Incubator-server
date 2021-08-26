@@ -46,36 +46,60 @@ def index():
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
+        # Check validity of form data
+        if re.fullmatch(r"^[\w\-\.]{1,100}$", request.form['userName']) is None:
+            return "Geçerli bir kullanıcı adı girin [A-Z]/[a-z]/[0-9]/[_]"
+        if re.fullmatch(r"^[\w\-\.]+@([\w-]+\.)+[\w-]{2,4}$", request.form['email']) is None:
+            return "Geçerli bir E-posta adresi girin"
+        if len(request.form['email']) > 100:
+            return "E-posta adresi çok uzun ya da kısa"
+        if 'name' in request.form.keys() and len(request.form['name']) > 50:
+            return "Ad çok uzun ya da kısa"
+        if 'surname' in request.form.keys() and len(request.form['surname']) > 50:
+            return "Soyad çok uzun ya da kısa"
+        if 'password' in request.form.keys() and 'password2' in request.form.keys() and  request.form['password'] !=  request.form['password2']:
+            return "Şifreler aynı değil"
+
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         try:
             # Do username pdw control
-
-            sql = "SELECT * FROM users where username like '{}'".format(request.form['userName'])
+            sql = "SELECT * FROM users where username = '{}'".format(request.form['userName'])
             cursor.execute(sql)
-            user = cursor.fetchone()
-            if user is None or len(user) <= 0:
-                salt = bytearray(secrets.token_bytes(64))
-                sql = """INSERT INTO users (username, register_time, email, first_name, last_name, pwd_iteration, pwd_hash, pwd_salt)
-                VALUES ('{}', current_timestamp, '{}', '{}', '{}', {}, E'\\\\x{}'::bytea, E'\\\\x{}'::bytea)
-                """.format(
-                    request.form['userName'],
-                    request.form['email'],
-                    request.form['name'],
-                    request.form['surname'],
-                    PWD_ITERATION,
-                    binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), salt, PWD_ITERATION, dklen = 64)).decode(),
-                    binascii.hexlify(salt).decode(),
-                )
-                cursor.execute(sql)
-                conn.commit()
-                cursor.close()
-                return redirect(url_for('login'))
+            user_by_name = cursor.fetchone()
+            sql = "SELECT * FROM users where email = '{}'".format(request.form['email'])
+            cursor.execute(sql)
+            user_by_email = cursor.fetchone()
+            if user_by_name is None or len(user_by_name) <= 0:
+                if user_by_email is None or len(user_by_email) <= 0:
+                    salt = bytearray(secrets.token_bytes(64))
+                    sql = """INSERT INTO users (username, register_time, email, first_name, last_name, pwd_iteration, pwd_hash, pwd_salt)
+                    VALUES ('{}', current_timestamp, '{}', '{}', '{}', {}, E'\\\\x{}'::bytea, E'\\\\x{}'::bytea)
+                    """.format(
+                        request.form['userName'],
+                        request.form['email'],
+                        request.form['name'],
+                        request.form['surname'],
+                        PWD_ITERATION,
+                        binascii.hexlify(hashlib.pbkdf2_hmac('sha256', bytearray(request.form['password'].encode()), salt, PWD_ITERATION, dklen = 64)).decode(),
+                        binascii.hexlify(salt).decode(),
+                    )
+                    cursor.execute(sql)
+                    conn.commit()
+                    cursor.close()
+                    return url_for('login'), 201
+                # E-mail already exists
+                else:
+                    return "Bu E-posta zaten kullanımda"
+            # Username already exists
+            else:  
+                return "Bu kullanıcı adı zaten kullanımda"
         except Exception as e:
             cursor.close()
             print(e)
             conn.rollback()
 
-    return render_template("signin.html")
+    if request.method == 'GET':
+        return render_template("signin.html")
 
 @app.route('/index/<int:userId>/<int:nodeId>')
 def main_view(userId = 0, nodeId = 0):
