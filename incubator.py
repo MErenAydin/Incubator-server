@@ -39,11 +39,17 @@ server_session = Session(app)
 tcp_server = TCP_server.socket_server("0.0.0.0", 4096)
 tcp_server.start()
 
+#Temporary redirect
 @app.route('/')
+def main():
+    return redirect(url_for('login'))
+
+#SUBDOMAIN incubator
+@app.route('/', subdomain='incubator')
 def index():
     return redirect(url_for('login'))
 
-@app.route('/signin', methods=['GET', 'POST'])
+@app.route('/signin', methods=['GET', 'POST'], subdomain='incubator')
 def signin():
     if request.method == 'POST':
         # Check validity of form data
@@ -69,7 +75,9 @@ def signin():
             sql = "SELECT * FROM users where email = '{}'".format(request.form['email'])
             cursor.execute(sql)
             user_by_email = cursor.fetchone()
+            # Username does not exists
             if user_by_name is None or len(user_by_name) <= 0:
+                # E-mail does not exists
                 if user_by_email is None or len(user_by_email) <= 0:
                     salt = bytearray(secrets.token_bytes(64))
                     sql = """INSERT INTO users (username, register_time, email, first_name, last_name, pwd_iteration, pwd_hash, pwd_salt)
@@ -101,7 +109,7 @@ def signin():
     if request.method == 'GET':
         return render_template("signin.html")
 
-@app.route('/index/<int:userId>/<int:nodeId>')
+@app.route('/index/<int:userId>/<int:nodeId>', subdomain='incubator')
 def main_view(userId = 0, nodeId = 0):
     cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
     try:
@@ -127,7 +135,7 @@ def main_view(userId = 0, nodeId = 0):
         print(e)
         return redirect(url_for('login'))
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'], subdomain='incubator')
 def login():
     if request.method == 'POST':
         cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -184,7 +192,7 @@ def login():
     if request.method == 'GET':
         return render_template("login.html")
 
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/logout', methods=['GET', 'POST'], subdomain='incubator')
 def logout():
     nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
     if len(nodes) > 0:
@@ -194,7 +202,7 @@ def logout():
      session.pop(key)
     return redirect(url_for("login"))
 
-@app.route('/temperature/<int:nodeId>', methods=['GET'])
+@app.route('/temperature/<int:nodeId>', methods=['GET'], subdomain='incubator')
 def temperature(nodeId = 0):
     try:
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
@@ -213,7 +221,7 @@ def temperature(nodeId = 0):
         print(e)
         return "error"
 
-@app.route('/humidity/<int:nodeId>', methods=['GET'])
+@app.route('/humidity/<int:nodeId>', methods=['GET'], subdomain='incubator')
 def humidity(nodeId = 0):
     try:
         nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
@@ -232,7 +240,7 @@ def humidity(nodeId = 0):
         print(e)
         return "error"
 
-@app.route('/save_settings', methods=['POST'])
+@app.route('/save_settings', methods=['POST'], subdomain='incubator')
 def save_settings():
     node_id = request.args.get("nodeId")
     user_id = request.args.get("userId")
