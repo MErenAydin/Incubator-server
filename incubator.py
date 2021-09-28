@@ -194,10 +194,10 @@ def login():
 
 @app.route('/logout', methods=['GET', 'POST'], subdomain='incubator')
 def logout():
-    nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
-    if len(nodes) > 0:
-        for node in nodes:
-            redis_client.set("Node-{}-delete".format(node), 1)
+    # nodes = struct.unpack("{}Q".format(len(session['nodes']) // 8), session['nodes'])
+    # if len(nodes) > 0:
+    #     for node in nodes:
+    #         redis_client.set("Node-{}-delete".format(node), 1)
     for key in list(session.keys()):
      session.pop(key)
     return redirect(url_for("login"))
