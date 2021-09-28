@@ -309,4 +309,4 @@ def save_settings():
     return redirect(url_for('main_view', userId = user_id, nodeId = node_id))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, ssl_context=("/etc/letsencrypt/live/merenaydin.com/fullchain.pem","/etc/letsencrypt/live/merenaydin.com/privkey.pem"))
+    app.run(host='0.0.0.0', port=80)
